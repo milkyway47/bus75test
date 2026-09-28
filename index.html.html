@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>75号系統 車窓ガイド（試作）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2a24; --sub:#5d6b65; --line:#d9e1dd;
+  --green:#008c5a; --green-soft:#e3f3ec; --led-bg:#16130f; --led:#ffb21e; --led-dim:#6b5220;
+  --btn:#e8352b; --btn-dark:#b71f17;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#101614; --ink:#e7eeea; --sub:#9aa9a2; --line:#27332e; --green:#2fbf85; --green-soft:#16261f;
+}}
+:root[data-theme="dark"]{ --bg:#101614; --ink:#e7eeea; --sub:#9aa9a2; --line:#27332e; --green:#2fbf85; --green-soft:#16261f; }
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px 40px}
+
+/* 車内表示器風パネル */
+.led{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--led-bg);color:var(--led);
+  margin:0 -16px;padding:14px 20px 16px;border-bottom:4px solid var(--green)}
+.led .route{display:flex;align-items:center;gap:10px;font-size:13px;color:#cfc6b8}
+.led .route b{background:var(--green);color:#fff;padding:2px 8px;border-radius:4px;font-size:14px}
+.led .next{font-size:13px;color:var(--led-dim);margin-top:8px}
+.led .stop{font-size:30px;font-weight:700;letter-spacing:.04em;line-height:1.25;
+  text-shadow:0 0 8px rgba(255,178,30,.35)}
+.led .meta{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;color:#cfc6b8}
+.bar{height:6px;background:#2d271f;border-radius:3px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--led);transition:width .5s linear}
+
+/* 発車ボタン（降車ボタン風） */
+.press{display:flex;flex-direction:column;align-items:center;padding:26px 0 8px}
+.bell{width:168px;height:168px;border-radius:50%;border:10px solid #f2f2f2;
+  background:radial-gradient(circle at 40% 35%,#ff6a5f,var(--btn) 55%,var(--btn-dark));
+  color:#fff;font:700 22px/1.3 inherit;font-family:inherit;cursor:pointer;
+  box-shadow:0 6px 0 #c9c9c9,0 10px 24px rgba(0,0,0,.18);transition:transform .08s}
+.bell:active{transform:translateY(4px);box-shadow:0 2px 0 #c9c9c9}
+.bell:disabled{filter:grayscale(1);opacity:.5;cursor:default}
+.bell small{display:block;font-size:12px;font-weight:400;opacity:.9}
+.hint{font-size:13px;color:var(--sub);margin:12px 0 0;text-align:center}
+
+.now{margin:18px 0;padding:14px 16px;background:var(--green-soft);border-left:4px solid var(--green);
+  border-radius:0 8px 8px 0;font-size:16px;min-height:60px}
+.now .t{font-size:12px;color:var(--sub)}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.ctrls button,.ctrls select{font:inherit;font-size:14px;padding:8px 12px;border-radius:8px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+button:focus-visible,select:focus-visible,li:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+
+/* 路線図 */
+h2{font-size:15px;margin:0 0 6px;color:var(--sub);font-weight:700}
+ol{list-style:none;margin:0;padding:0;position:relative}
+ol::before{content:"";position:absolute;left:11px;top:14px;bottom:14px;width:4px;background:var(--line);border-radius:2px}
+li{position:relative;display:flex;align-items:center;gap:14px;padding:7px 4px 7px 0;cursor:pointer;border-radius:6px}
+li .dot{flex:none;width:26px;height:26px;border-radius:50%;background:var(--bg);border:4px solid var(--line);z-index:1}
+li .nm{flex:1;font-size:16px}
+li .mn{font-size:12px;color:var(--sub)}
+li.done .dot{border-color:var(--green);background:var(--green)}
+li.done .nm{color:var(--sub)}
+li.cur .dot{border-color:var(--green);background:var(--bg);box-shadow:0 0 0 5px var(--green-soft)}
+li.cur .nm{font-weight:700}
+
+/* 見どころカード：左右の窓に合わせて寄せる */
+.win{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin:4px 2px 8px}
+.win span:nth-child(2){color:var(--green);font-weight:700}
+.pts{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.pt{max-width:88%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);transition:background .2s,border-color .2s}
+.pt.L{align-self:flex-start;border-left:5px solid var(--green)}
+.pt.R{align-self:flex-end;border-right:5px solid var(--green);text-align:right}
+.pt.C{align-self:stretch;max-width:100%;border-top:4px solid var(--line)}
+.pt.T{align-self:stretch;max-width:100%;border-style:dashed}
+.pt .sd{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--green);border-radius:4px;padding:1px 7px;margin-bottom:4px}
+.pt.C .sd{background:#6b7c74}.pt.T .sd{background:#b8860b}
+.pt h3{margin:0 0 2px;font-size:16px}
+.pt p{margin:0;font-size:14px;color:var(--sub);line-height:1.65}
+.pt.on{background:var(--green-soft);border-color:var(--green)}
+.pt.R .sd{float:none}
+.ride{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#fff;background:#d9480f;border-radius:10px;padding:1px 8px;vertical-align:2px}
+.stamp{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:10px 12px;border:2px dashed #d9480f;border-radius:10px;font-size:14px}
+.stamp b{font-size:20px;color:#d9480f}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:92%;
+  background:#1b2a24;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:20}
+.toast.show{opacity:1}
+.note{font-size:12px;color:var(--sub);margin-top:24px;line-height:1.7}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="led" aria-live="polite">
+    <div class="route"><b>75</b>大阪駅前 → なんば</div>
+    <div class="next" id="lblNext">ご乗車のバス停</div>
+    <div class="stop" id="stopName">大阪駅前</div>
+    <div class="meta"><span id="lblState">発車したらボタンを押してください</span><span id="lblTime"></span></div>
+    <div class="bar"><i id="bar"></i></div>
+  </header>
+
+  <div class="press">
+    <button class="bell" id="bell"><span id="bellMain">発車した</span><small id="bellSub">大阪駅前</small></button>
+    <p class="hint">バスが動き出したら押すと、次のバス停までの案内が流れます</p>
+  </div>
+
+  <div class="now"><div class="t" id="nowTitle">案内</div><div id="nowText">途中から乗った場合は、下の路線図で乗車したバス停をタップしてください。</div></div>
+  <div class="win" aria-hidden="true"><span>◀ 左の窓</span><span>▲ 進行方向</span><span>右の窓 ▶</span></div>
+  <div class="pts" id="pts"></div>
+
+  <div class="ctrls">
+    <button id="btnRepeat">もう一度聞く</button>
+    <button id="btnStop">音声を止める</button>
+    <button id="btnReset">スタンプをリセット</button>
+    <select id="rate" aria-label="読み上げ速度">
+      <option value="0.9">ゆっくり</option><option value="1.0" selected>ふつう</option><option value="1.15">はやめ</option>
+    </select>
+  </div>
+
+  <div class="stamp"><span>実乗車スタンプ<br><small>バス停から100m以内で押すと記録されます</small></span><span><b id="stampCount">0</b> / <span id="stampTotal">0</span></span></div>
+  <h2>路線図（タップで現在地を変更）</h2>
+  <ol id="list"></ol>
+
+  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から100m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。</p>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+// 見どころの位置：L=左手 R=右手 C=前方・頭上・両側・沿線 T=豆知識
+// [バス停名, 次のバス停までの目安(分), 区間の導入, [[位置, 表示ラベル, 見出し, 読み上げ文], ...]]
+const STOPS = [
+ ["大阪駅前",3,"大阪シティバス75号系統、なんば行きへようこそ。梅田からなんばまで、地下鉄の通らない、なにわ筋を南へ縦断します。",[
+  ["C","沿線","梅田のビル群","バスは梅田のビル街を西へ進みます。大阪駅の西側では、うめきたの再開発で、新しい街と公園が生まれています。"],
+  ["T","豆知識","キタとミナミを結ぶ路線","梅田周辺はキタ、なんば周辺はミナミと呼ばれます。このバスは、大阪の二つの中心地を結んでいます。"]]],
+ ["桜橋",3,"",[
+  ["C","前方","四つ橋筋の交差点","桜橋の交差点を過ぎ、国道2号線を西へ進みます。"],
+  ["T","豆知識","桜橋の由来","桜橋の名は、かつてこのあたりの堀にかかっていた橋の名前が残ったものです。大阪には、川や堀が埋め立てられた後も、橋の名前だけが残る地名がたくさんあります。"]]],
+ ["出入橋",3,"",[
+  ["L","左折","なにわ筋へ","出入橋の先で左に曲がり、なにわ筋に入ります。ここから終点近くまで、ほぼまっすぐ南へ進みます。"],
+  ["T","豆知識","足元では新線工事","なにわ筋の地下では、大阪駅となんば方面を結ぶ新しい鉄道、なにわ筋線の工事が進んでいます。"],
+  ["T","豆知識","世界初の先物取引","このあたりの堂島には、江戸時代に堂島米市場がありました。米の先物取引が行われた、世界でも最も古い先物市場の一つとされています。"]]],
+ ["田蓑橋",3,"まもなく、川に挟まれた中之島を渡ります。",[
+  ["C","両側","堂島川","田蓑橋で堂島川を渡ります。川沿いの景色をお楽しみください。"],
+  ["R","右手","リーガロイヤルホテルと国際会議場","右手の中之島の西側には、リーガロイヤルホテルや大阪府立国際会議場、グランキューブ大阪が並びます。"],
+  ["L","左手","美術館と科学館のエリア","左手の奥には、国立国際美術館や大阪市立科学館、大阪中之島美術館が集まる、文化施設のエリアが広がります。"],
+  ["C","両側","土佐堀川","続いて土佐堀川を渡ると、中之島ともお別れです。"]]],
+ ["土佐堀一丁目",2,"",[
+  ["T","豆知識","土佐堀の由来","土佐堀の名は、江戸時代にこのあたりに土佐藩の蔵屋敷があったことに由来すると言われます。天下の台所と呼ばれた大阪には、各地の藩の蔵屋敷が集まっていました。"],
+  ["C","両側","オフィスと問屋の街","このあたりから、オフィスビルと昔からの問屋が入り混じる、西船場のエリアに入ります。"]]],
+ ["京町堀一丁目",2,"",[
+  ["C","両側","靱公園","まもなく、左右に靱公園の緑が広がります。なにわ筋をはさんで、東側がバラ園のある東園、西側がテニスコートのある西園です。"],
+  ["T","豆知識","京町堀の由来","京町堀は、京都の伏見の町人が移り住んで開いたことから、この名がついたと言われています。"]]],
+ ["靱本町一丁目",2,"",[
+  ["T","豆知識","飛行場だった公園","靱公園の場所は、もとは海産物の市場でした。戦後は進駐軍に接収され、飛行場として使われたこともあります。"],
+  ["C","前方","中央大通","まもなく本町通、中央大通を渡ります。大阪のビジネスの中心、本町のエリアです。"]]],
+ ["立売堀二丁目",3,"",[
+  ["T","豆知識","立売堀と書いて、いたちぼり","立売堀と書いて、いたちぼりと読みます。仙台の伊達家が堀を開いたことから伊達堀と呼ばれ、それがなまったという説があります。"],
+  ["C","両側","機械工具の問屋街","立売堀は、機械工具や金物の問屋街として知られています。"]]],
+ ["西大橋",2,"",[
+  ["C","前方","長堀通","長堀通を渡ります。かつてはここに長堀川が流れ、西大橋という橋がかかっていました。"],
+  ["T","豆知識","川の上の地下街","長堀川は埋め立てられ、その下には長堀地下街、クリスタ長堀がつくられています。"]]],
+ ["北堀江二丁目",2,"ここから堀江のエリアです。",[
+  ["C","両側","おしゃれな堀江の街","北堀江と南堀江は、カフェや雑貨店、セレクトショップが並ぶ、おしゃれな街として人気です。"],
+  ["T","豆知識","オレンジストリート","南堀江を東西に走る立花通りは、かつて家具屋が軒を連ねた家具の街。今はオレンジストリートと呼ばれ、若者でにぎわいます。"]]],
+ ["幸町一丁目",3,"",[
+  ["C","両側","道頓堀川","道頓堀川を渡ります。この川を東にたどると、グリコの看板で有名な道頓堀の繁華街です。"],
+  ["C","前方","OCAT","まもなくJR難波駅。駅の上には、大阪シティエアターミナル、OCATがあります。"]]],
+ ["ＪＲ難波駅前",2,"",[
+  ["T","豆知識","空港へのバスも発着","OCATからは、関西国際空港などへの空港バスや、各地への高速バスが発着しています。"],
+  ["C","前方","ミナミの中心へ","ここから東へ向かい、ミナミの中心、なんばへ入ります。"]]],
+ ["なんば［賑橋］",2,"まもなく終点です。",[
+  ["T","豆知識","大阪球場の跡地","なんばの南側にあるなんばパークスは、プロ野球の大阪球場の跡地に建てられた商業施設です。屋上には緑豊かな庭園があります。"],
+  ["C","前方","終点なんば","終点のなんばです。道頓堀、心斎橋、黒門市場など、ミナミの観光はここから歩いて楽しめます。ご乗車ありがとうございました。"]]],
+ ["なんば",0,"",[]]
+];
+
+// バス停の位置（Googleマップ上の停留所。上下線でポールが違う場合は両方）
+const GEO = {
+ "大阪駅前":[[34.702213,135.497308],[34.702798,135.494540]],
+ "桜橋":[[34.697162,135.495306],[34.698878,135.495496]],
+ "出入橋":[[34.697129,135.490990],[34.696444,135.489885]],
+ "田蓑橋":[[34.693001,135.491670],[34.693428,135.492539]],
+ "土佐堀一丁目":[[34.689020,135.492400],[34.688880,135.491910]],
+ "京町堀一丁目":[[34.685566,135.492618],[34.686585,135.492798]],
+ "靱本町一丁目":[[34.683053,135.492779]],
+ "立売堀二丁目":[[34.679253,135.493024],[34.679709,135.493328]],
+ "西大橋":[[34.674445,135.493157],[34.675263,135.492729]],
+ "北堀江二丁目":[[34.672405,135.492680],[34.673050,135.493160]],
+ "幸町一丁目":[[34.668821,135.492186],[34.668309,135.492447]],
+ "ＪＲ難波駅前":[[34.667802,135.496117]],
+ "なんば［賑橋］":[[34.667465,135.497760]],
+ "なんば":[[34.665923,135.499045],[34.665516,135.499174]]
+};
+const RADIUS = 100; // メートル
+const KEY = "osaka75-rides";
+let rides = {};
+try{ rides = JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ rides = {}; }
+function saveRides(){ try{ localStorage.setItem(KEY, JSON.stringify(rides)); }catch(e){} }
+function distM(a,b,c,d){ const r=6371000,t=Math.PI/180,x=(c-a)*t,y=(d-b)*t;
+  const h=Math.sin(x/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)**2; return 2*r*Math.asin(Math.sqrt(h)); }
+function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
+  clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("show"),4000); }
+// ボタンを押したときに位置を確認し、100m以内のバス停に乗車済みマークを付ける（案内は位置に関係なく動く）
+function checkIn(){
+  if(!("geolocation" in navigator)) return;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:la, longitude:lo, accuracy} = pos.coords;
+    let best=null;
+    STOPS.forEach(([name])=>{ (GEO[name]||[]).forEach(([a,b])=>{
+      const d=distM(la,lo,a,b); if(!best||d<best.d) best={name,d}; }); });
+    if(best && best.d<=RADIUS){
+      const first = !rides[best.name];
+      rides[best.name] = rides[best.name] || new Date().toISOString();
+      saveRides(); renderList(); renderStamp();
+      toast(first ? `✔ ${best.name} を乗車済みにしました` : `${best.name} は乗車済みです`);
+    }else if(best){
+      toast(`最寄りの ${best.name} まで約${Math.round(best.d)}m（精度±${Math.round(accuracy)}m）のため記録なし`);
+    }
+  }, err=>{
+    const framed = (()=>{ try{ return window.self!==window.top; }catch(e){ return true; } })();
+    if(err.code===1 && framed) toast("この表示画面では位置情報が使えません。スタンプはブラウザで直接開いたときに記録されます");
+    else toast(err.code===1 ? "位置情報がオフのため、スタンプは記録されません" : "位置を取得できませんでした");
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:10000});
+}
+function renderStamp(){
+  $("stampCount").textContent = STOPS.filter(s=>rides[s[0]]).length;
+  $("stampTotal").textContent = STOPS.length;
+}
+const $ = id => document.getElementById(id);
+const synth = window.speechSynthesis;
+const CPS = 6; // 読み上げ速度の目安（1秒あたりの文字数）
+let cur = 0, running = false, tStart = 0, tLimit = 0, tick = null, cutoff = null;
+
+// 区間の案内を「導入＋見どころ順」に並べる。所要時間を超えそうなら豆知識から削る
+function buildScript(i){
+  const [,min,lead,pts] = STOPS[i];
+  const budget = (min*60-12)*CPS*parseFloat($("rate").value);
+  let items = pts.map((p,k)=>({k,text:p[3],trivia:p[0]==="T"}));
+  const len = ()=> lead.length + items.reduce((a,b)=>a+b.text.length,0);
+  while(len()>budget && items.some(x=>x.trivia)) items.splice(items.findLastIndex(x=>x.trivia),1);
+  const parts = [];
+  if(lead) parts.push({k:-1,text:lead});
+  return parts.concat(items);
+}
+function renderPts(i, active=-2){
+  const pts = STOPS[i][3];
+  $("pts").innerHTML = pts.map((p,k)=>`<div class="pt ${p[0]} ${k===active?'on':''}" id="pt${k}">
+    <span class="sd">${p[1]}</span><h3>${p[2]}</h3><p>${p[3]}</p></div>`).join("");
+}
+function renderList(){
+  $("list").innerHTML = STOPS.map((s,i)=>
+    `<li tabindex="0" data-i="${i}" class="${i<cur?'done':''} ${i===cur?'cur':''}">
+      <span class="dot"></span><span class="nm">${s[0]}${rides[s[0]]?'<span class="ride">✔乗車済</span>':''}</span>
+      <span class="mn">${s[1]?'約'+s[1]+'分':'終点'}</span></li>`).join("");
+}
+function setPanel(){
+  const last = cur===STOPS.length-1;
+  if(running){
+    $("lblNext").textContent="つぎは";
+    $("stopName").textContent=STOPS[cur+1][0];
+    $("bellMain").textContent="発車した"; $("bellSub").textContent=`${STOPS[cur+1][0]} を出たら`;
+    const toLast = cur+1===STOPS.length-1;
+    $("bellMain").textContent = toLast ? "到着した" : "発車した";
+    $("bellSub").textContent = toLast ? "スタンプを記録" : `${STOPS[cur+1][0]} を出たら`;
+    $("bell").disabled = false;
+  }else{
+    $("lblNext").textContent = last ? "終点" : "停車中";
+    $("stopName").textContent=STOPS[cur][0];
+    $("bellMain").textContent = last ? "到着した" : "発車した";
+    $("bellSub").textContent= last ? "スタンプを記録" : STOPS[cur][0];
+    $("bell").disabled = false;
+    $("lblState").textContent = last ? "ご乗車ありがとうございました" : "発車したらボタンを押してください";
+    $("lblTime").textContent=""; $("bar").style.width="0";
+    if(!last){
+      $("nowTitle").textContent = `この先の見どころ（${STOPS[cur][0]} → ${STOPS[cur+1][0]}）`;
+      $("nowText").textContent = "発車ボタンを押すと、左右の見どころを順番に案内します。";
+      renderPts(cur);
+    }else{ $("pts").innerHTML=""; $("nowTitle").textContent="終点"; $("nowText").textContent="なんばに到着しました。"; }
+  }
+}
+function speak(parts){
+  synth.cancel();
+  const rate = parseFloat($("rate").value);
+  const v = synth.getVoices().find(v=>v.lang.startsWith("ja"));
+  parts.forEach(p=>{
+    p.text.split(/(?<=。)/).filter(Boolean).forEach((s,j)=>{
+      const u = new SpeechSynthesisUtterance(s);
+      u.lang="ja-JP"; u.rate=rate; if(v) u.voice=v;
+      if(j===0) u.onstart = ()=>{
+        document.querySelectorAll(".pt.on").forEach(e=>e.classList.remove("on"));
+        const el = $("pt"+p.k); if(el){ el.classList.add("on"); el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+      };
+      synth.speak(u);
+    });
+  });
+}
+function depart(){
+  if(cur>=STOPS.length-1) return;
+  const [name,min] = STOPS[cur];
+  running = true;
+  tLimit = min*60*1000; tStart = Date.now();
+  const script = buildScript(cur);
+  $("nowTitle").textContent = `${name} → ${STOPS[cur+1][0]}`;
+  $("nowText").textContent = STOPS[cur][2] || "左右の見どころを順番にご案内します。";
+  renderPts(cur);
+  speak(script);
+  // ルール3：区間の所要時間を超える前に音声を打ち切る（到着10秒前）
+  clearTimeout(cutoff);
+  cutoff = setTimeout(()=>synth.cancel(), Math.max(tLimit-10000, 20000));
+  clearInterval(tick); tick = setInterval(update, 500);
+  setPanel(); update();
+}
+function update(){
+  const el = Date.now()-tStart, r = Math.max(0,tLimit-el);
+  $("bar").style.width = Math.min(100, el/tLimit*100)+"%";
+  $("lblState").textContent = synth.speaking ? "案内中" : "走行中";
+  $("lblTime").textContent = `到着まで約 ${Math.floor(r/60000)}:${String(Math.floor(r/1000)%60).padStart(2,"0")}`;
+  if(r<=0) arrive();
+}
+function arrive(){ clearInterval(tick); running=false; cur++; renderList(); setPanel(); }
+// 目安より早く次のバス停を発車した場合も、そのまま押せば次の案内へ進む
+$("bell").onclick = ()=>{
+  checkIn();
+  if(running){ clearTimeout(cutoff); synth.cancel(); arrive(); }
+  if(cur===STOPS.length-1) return;
+  depart();
+};
+$("btnReset").onclick = ()=>{ if(confirm("乗車済みスタンプをすべて消去しますか？")){ rides={}; saveRides(); renderList(); renderStamp(); } };
+$("list").addEventListener("click", e=>{
+  const li = e.target.closest("li"); if(!li) return;
+  clearInterval(tick); clearTimeout(cutoff); synth.cancel();
+  running=false; cur=+li.dataset.i; renderList(); setPanel();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+$("list").addEventListener("keydown", e=>{ if(e.key==="Enter") e.target.click(); });
+$("btnRepeat").onclick = ()=>{ if(running) speak(buildScript(cur)); };
+$("btnStop").onclick = ()=>synth.cancel();
+if(!("speechSynthesis" in window)) $("nowText").textContent="この端末のブラウザは音声読み上げに対応していません。見どころは画面でご覧ください。";
+renderList(); setPanel(); renderStamp();
+</script>
+</body>
+</html>
