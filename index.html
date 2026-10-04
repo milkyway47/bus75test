@@ -231,20 +231,38 @@ function renderStamp(){
 }
 const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis;
-const CPS = 6; // 読み上げ速度の目安（1秒あたりの文字数）
+const CPS = 6; // 読み上げ速度の目安（1秒あたりの文字数）。音声ファイルがないときに使う
 let cur = 0, running = false, tStart = 0, tLimit = 0, tick = null, cutoff = null;
+
+// 録音済みの案内音声（audio/manifest.json）。読み込めなければブラウザの読み上げを使う
+let MAN = null;
+const player = new Audio();
+let queue = [], qi = 0;
+fetch("audio/manifest.json").then(r=>r.ok?r.json():Promise.reject()).then(m=>{ MAN=m; }).catch(()=>{
+  if(!("speechSynthesis" in window)) $("nowText").textContent="この端末のブラウザは音声読み上げに対応していません。見どころは画面でご覧ください。";
+});
+function clip(i,k){
+  const seg = MAN && MAN.segments.find(s=>s.index===i);
+  return seg ? seg.parts.find(p=>p.k===k) : null;
+}
 
 // 区間の案内を「導入＋見どころ順」に並べる。所要時間を超えそうなら豆知識から削る
 function buildScript(i){
   const [,min,lead,pts] = STOPS[i];
-  const budget = (min*60-12)*CPS*parseFloat($("rate").value);
-  let items = pts.map((p,k)=>({k,text:p[3],trivia:p[0]==="T"}));
-  const len = ()=> lead.length + items.reduce((a,b)=>a+b.text.length,0);
+  const budget = (min*60-12)*parseFloat($("rate").value); // 秒
+  const mk = (k,text,trivia)=>{ const c=clip(i,k); return {k,text,trivia,file:c&&c.file,sec:c?c.sec:text.length/CPS}; };
+  let items = pts.map((p,k)=>mk(k,p[3],p[0]==="T"));
+  const parts = lead ? [mk(-1,lead,false)] : [];
+  const len = ()=> parts.concat(items).reduce((a,b)=>a+b.sec,0);
   while(len()>budget && items.some(x=>x.trivia)) items.splice(items.findLastIndex(x=>x.trivia),1);
-  const parts = [];
-  if(lead) parts.push({k:-1,text:lead});
   return parts.concat(items);
 }
+function highlight(k){
+  document.querySelectorAll(".pt.on").forEach(e=>e.classList.remove("on"));
+  const el = $("pt"+k); if(el){ el.classList.add("on"); el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+}
+function stopVoice(){ synth && synth.cancel(); player.pause(); queue=[]; }
+function speaking(){ return (synth && synth.speaking) || !player.paused; }
 function renderPts(i, active=-2){
   const pts = STOPS[i][3];
   $("pts").innerHTML = pts.map((p,k)=>`<div class="pt ${p[0]} ${k===active?'on':''}" id="pt${k}">
@@ -282,6 +300,23 @@ function setPanel(){
   }
 }
 function speak(parts){
+  stopVoice();
+  if(parts.length && parts.every(p=>p.file)){ queue=parts; qi=0; playNext(); }
+  else speakTTS(parts);
+}
+// 音声ファイルを順番に再生する。途中で読み込めなければ残りをブラウザの読み上げに切り替える
+function playNext(){
+  if(qi>=queue.length){ queue=[]; return; }
+  const p = queue[qi];
+  player.src = "audio/"+p.file;
+  player.playbackRate = parseFloat($("rate").value);
+  highlight(p.k);
+  player.play().catch(()=>{ const rest=queue.slice(qi); queue=[]; speakTTS(rest); });
+}
+player.onended = ()=>{ if(queue.length){ qi++; playNext(); } };
+player.onerror = ()=>{ if(queue.length){ const rest=queue.slice(qi); queue=[]; speakTTS(rest); } };
+function speakTTS(parts){
+  if(!synth) return;
   synth.cancel();
   const rate = parseFloat($("rate").value);
   const v = synth.getVoices().find(v=>v.lang.startsWith("ja"));
@@ -289,10 +324,7 @@ function speak(parts){
     p.text.split(/(?<=。)/).filter(Boolean).forEach((s,j)=>{
       const u = new SpeechSynthesisUtterance(s);
       u.lang="ja-JP"; u.rate=rate; if(v) u.voice=v;
-      if(j===0) u.onstart = ()=>{
-        document.querySelectorAll(".pt.on").forEach(e=>e.classList.remove("on"));
-        const el = $("pt"+p.k); if(el){ el.classList.add("on"); el.scrollIntoView({block:"nearest",behavior:"smooth"}); }
-      };
+      if(j===0) u.onstart = ()=>highlight(p.k);
       synth.speak(u);
     });
   });
@@ -309,14 +341,14 @@ function depart(){
   speak(script);
   // ルール3：区間の所要時間を超える前に音声を打ち切る（到着10秒前）
   clearTimeout(cutoff);
-  cutoff = setTimeout(()=>synth.cancel(), Math.max(tLimit-10000, 20000));
+  cutoff = setTimeout(stopVoice, Math.max(tLimit-10000, 20000));
   clearInterval(tick); tick = setInterval(update, 500);
   setPanel(); update();
 }
 function update(){
   const el = Date.now()-tStart, r = Math.max(0,tLimit-el);
   $("bar").style.width = Math.min(100, el/tLimit*100)+"%";
-  $("lblState").textContent = synth.speaking ? "案内中" : "走行中";
+  $("lblState").textContent = speaking() ? "案内中" : "走行中";
   $("lblTime").textContent = `到着まで約 ${Math.floor(r/60000)}:${String(Math.floor(r/1000)%60).padStart(2,"0")}`;
   if(r<=0) arrive();
 }
@@ -324,21 +356,21 @@ function arrive(){ clearInterval(tick); running=false; cur++; renderList(); setP
 // 目安より早く次のバス停を発車した場合も、そのまま押せば次の案内へ進む
 $("bell").onclick = ()=>{
   checkIn();
-  if(running){ clearTimeout(cutoff); synth.cancel(); arrive(); }
+  if(running){ clearTimeout(cutoff); stopVoice(); arrive(); }
   if(cur===STOPS.length-1) return;
   depart();
 };
 $("btnReset").onclick = ()=>{ if(confirm("乗車済みスタンプをすべて消去しますか？")){ rides={}; saveRides(); renderList(); renderStamp(); } };
 $("list").addEventListener("click", e=>{
   const li = e.target.closest("li"); if(!li) return;
-  clearInterval(tick); clearTimeout(cutoff); synth.cancel();
+  clearInterval(tick); clearTimeout(cutoff); stopVoice();
   running=false; cur=+li.dataset.i; renderList(); setPanel();
   window.scrollTo({top:0,behavior:"smooth"});
 });
 $("list").addEventListener("keydown", e=>{ if(e.key==="Enter") e.target.click(); });
 $("btnRepeat").onclick = ()=>{ if(running) speak(buildScript(cur)); };
-$("btnStop").onclick = ()=>synth.cancel();
-if(!("speechSynthesis" in window)) $("nowText").textContent="この端末のブラウザは音声読み上げに対応していません。見どころは画面でご覧ください。";
+$("btnStop").onclick = stopVoice;
+$("rate").onchange = ()=>{ player.playbackRate = parseFloat($("rate").value); };
 renderList(); setPanel(); renderStamp();
 </script>
 </body>
