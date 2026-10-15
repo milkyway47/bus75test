@@ -90,7 +90,27 @@ li.cur .nm{font-weight:700}
   background:#1b2a24;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:20}
 .toast.show{opacity:1}
 .note{font-size:12px;color:var(--sub);margin-top:24px;line-height:1.7}
-@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+/* 方位計（進行方向）：画面右上 */
+.led .route,.led .next,.led .stop{padding-right:72px}
+.compass{position:absolute;top:10px;right:14px;width:64px;text-align:center;color:#cfc6b8}
+.compass svg{display:block;width:56px;height:56px;margin:0 auto}
+.compass #needle{transition:transform .6s ease;transform-origin:50px 50px}
+.compass .dir{font-size:12px;line-height:1.2;margin-top:2px;color:var(--led)}
+.compass.off #needle{opacity:.25}
+.compass.off .dir{color:#8a8070}
+
+/* 車窓の写真（タップでポップアップ） */
+.pt.ph{cursor:pointer}
+.pt .cam{display:inline-block;margin-left:6px;font-size:11px;color:var(--green);border:1px solid var(--green);border-radius:10px;padding:0 7px;vertical-align:2px}
+dialog.photo{border:none;padding:0;border-radius:12px;max-width:min(560px,94vw);width:94vw;background:var(--bg);color:var(--ink)}
+dialog.photo::backdrop{background:rgba(0,0,0,.6)}
+dialog.photo img{display:block;width:100%;max-height:60vh;object-fit:cover;background:#ccc;border-radius:12px 12px 0 0}
+dialog.photo .cap{padding:10px 14px 14px}
+dialog.photo h3{margin:0 0 4px;font-size:17px}
+dialog.photo .credit{font-size:11px;color:var(--sub);margin:6px 0 10px;word-break:break-all}
+dialog.photo .credit a{color:var(--sub)}
+dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;width:100%}
+@media (prefers-reduced-motion:reduce){.bar i,.compass #needle{transition:none}}
 </style>
 </head>
 <body>
@@ -101,6 +121,16 @@ li.cur .nm{font-weight:700}
     <div class="stop" id="stopName">大阪駅前</div>
     <div class="meta"><span id="lblState">発車したらボタンを押してください</span><span id="lblTime"></span></div>
     <div class="bar"><i id="bar"></i></div>
+    <div class="compass off" id="compass" role="img" aria-label="進行方向：不明">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="#221d17" stroke="#5a4e3c" stroke-width="3"/>
+        <g font-size="15" font-weight="700" text-anchor="middle" fill="#cfc6b8">
+          <text x="50" y="20" fill="#ff6a5f">北</text><text x="85" y="55">東</text><text x="50" y="91">南</text><text x="15" y="55">西</text>
+        </g>
+        <g id="needle"><path d="M50 22 L60 56 L50 50 L40 56 Z" fill="#ffb21e"/><circle cx="50" cy="50" r="4" fill="#ffb21e"/></g>
+      </svg>
+      <div class="dir" id="compassDir">方位 --</div>
+    </div>
   </header>
 
   <div class="press">
@@ -121,13 +151,21 @@ li.cur .nm{font-weight:700}
     </select>
   </div>
 
-  <div class="stamp"><span>実乗車スタンプ<br><small>バス停から100m以内で押すと記録されます</small></span><span><b id="stampCount">0</b> / <span id="stampTotal">0</span></span></div>
+  <div class="stamp"><span>実乗車スタンプ<br><small>バス停から200m以内で押すと記録されます</small></span><span><b id="stampCount">0</b> / <span id="stampTotal">0</span></span></div>
   <h2>路線図（タップで現在地を変更）</h2>
   <ol id="list"></ol>
 
-  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から100m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。</p>
+  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から200m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。</p>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<dialog class="photo" id="photo">
+  <img id="photoImg" alt="">
+  <div class="cap">
+    <h3 id="photoTitle"></h3>
+    <div class="credit" id="photoCredit"></div>
+    <form method="dialog"><button>閉じる</button></form>
+  </div>
+</dialog>
 <script>
 // 見どころの位置：L=左手 R=右手 C=前方・頭上・両側・沿線 T=豆知識
 // [バス停名, 次のバス停までの目安(分), 区間の導入, [[位置, 表示ラベル, 見出し, 読み上げ文], ...]]
@@ -194,7 +232,27 @@ const GEO = {
  "なんば［賑橋］":[[34.667465,135.497760]],
  "なんば":[[34.665923,135.499045],[34.665516,135.499174]]
 };
-const RADIUS = 100; // メートル
+// 車窓の写真（Wikimedia Commons。キーは s区間番号_p見どころ番号）
+// [画像URL, 撮影者, ライセンス, 出典ページ]
+const IMG = {
+ "s00_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Grand_Green_Osaka_2026-07.jpg/960px-Grand_Green_Osaka_2026-07.jpg", "Mr.ちゅらさん", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Grand_Green_Osaka_2026-07.jpg"],
+ "s01_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Sakurabashi_Intersection_in_201409.JPG/960px-Sakurabashi_Intersection_in_201409.JPG", "Mc681", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Sakurabashi_Intersection_in_201409.JPG"],
+ "s02_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Utsubo-Hommachi1_on_Naniwa-suji_Osaka_Japan.jpg/960px-Utsubo-Hommachi1_on_Naniwa-suji_Osaka_Japan.jpg", "Mc681", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Utsubo-Hommachi1_on_Naniwa-suji_Osaka_Japan.jpg"],
+ "s03_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Dojima_River_%40_Nakanoshima_%40_Osaka_%2813383008104%29.jpg/960px-Dojima_River_%40_Nakanoshima_%40_Osaka_%2813383008104%29.jpg", "Guilhem Vellut from Annecy, France", "CC BY 2.0", "https://commons.wikimedia.org/wiki/File:Dojima_River_@_Nakanoshima_@_Osaka_(13383008104).jpg"],
+ "s03_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Rihga_Royal_Hotel_and_Osaka_International_Convention_Center.jpg/960px-Rihga_Royal_Hotel_and_Osaka_International_Convention_Center.jpg", "Waei", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Rihga_Royal_Hotel_and_Osaka_International_Convention_Center.jpg"],
+ "s03_p2":["https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/NMAO01s3200.jpg/960px-NMAO01s3200.jpg", "663highland", "CC BY 2.5", "https://commons.wikimedia.org/wiki/File:NMAO01s3200.jpg"],
+ "s03_p3":["https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Tosabori_River_Twilight_2024-07.jpg/960px-Tosabori_River_Twilight_2024-07.jpg", "Mr.ちゅらさん", "CC0", "https://commons.wikimedia.org/wiki/File:Tosabori_River_Twilight_2024-07.jpg"],
+ "s05_p0":["https://upload.wikimedia.org/wikipedia/commons/d/d2/UtsuboPark-RoseGarden01.jpg", "inoue-hiro", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:UtsuboPark-RoseGarden01.jpg"],
+ "s06_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Miyaato-PedestrianBridge_on_Chuo-odori_Osaka_Japan.jpg/960px-Miyaato-PedestrianBridge_on_Chuo-odori_Osaka_Japan.jpg", "Mc681", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Miyaato-PedestrianBridge_on_Chuo-odori_Osaka_Japan.jpg"],
+ "s07_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/4_Chome_Itachibori%2C_Nishi-ku%2C_%C5%8Csaka-shi%2C_%C5%8Csaka-fu_550-0012%2C_Japan_-_panoramio.jpg/960px-4_Chome_Itachibori%2C_Nishi-ku%2C_%C5%8Csaka-shi%2C_%C5%8Csaka-fu_550-0012%2C_Japan_-_panoramio.jpg", "shikabane taro", "CC BY 3.0", "https://commons.wikimedia.org/wiki/File:4_Chome_Itachibori,_Nishi-ku,_%C5%8Csaka-shi,_%C5%8Csaka-fu_550-0012,_Japan_-_panoramio.jpg"],
+ "s08_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Shimbashi_on_Nagahori-dori_Osaka_Japan.jpg/960px-Shimbashi_on_Nagahori-dori_Osaka_Japan.jpg", "Mc681", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Shimbashi_on_Nagahori-dori_Osaka_Japan.jpg"],
+ "s09_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Minamihorie-1.jpg/960px-Minamihorie-1.jpg", "W236", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Minamihorie-1.jpg"],
+ "s10_p0":["https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Dotonbori_ao_02.jpg/960px-Dotonbori_ao_02.jpg", "Sakai Yayoi", "CC0", "https://commons.wikimedia.org/wiki/File:Dotonbori_ao_02.jpg"],
+ "s10_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/%E5%A4%A7%E9%98%AA%E3%82%B7%E3%83%86%E3%82%A3%E3%82%A8%E3%82%A2%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_OCAT%2C_Osaka_City_Air_Terminal_2012.10.09_-_panoramio.jpg/960px-%E5%A4%A7%E9%98%AA%E3%82%B7%E3%83%86%E3%82%A3%E3%82%A8%E3%82%A2%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_OCAT%2C_Osaka_City_Air_Terminal_2012.10.09_-_panoramio.jpg", "Nankou Oronain", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:%E5%A4%A7%E9%98%AA%E3%82%B7%E3%83%86%E3%82%A3%E3%82%A8%E3%82%A2%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_OCAT,_Osaka_City_Air_Terminal_2012.10.09_-_panoramio.jpg"],
+ "s11_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Osaka-Namba_Station_260125.jpg/960px-Osaka-Namba_Station_260125.jpg", "Aspere", "CC0", "https://commons.wikimedia.org/wiki/File:Osaka-Namba_Station_260125.jpg"],
+ "s12_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Dotonbori%2C_Osaka%2C_at_night%2C_November_2016.jpg/960px-Dotonbori%2C_Osaka%2C_at_night%2C_November_2016.jpg", "Martin Falbisoner", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Dotonbori,_Osaka,_at_night,_November_2016.jpg"],
+};
+const RADIUS = 200; // メートル
 const KEY = "osaka75-rides";
 let rides = {};
 try{ rides = JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ rides = {}; }
@@ -203,7 +261,7 @@ function distM(a,b,c,d){ const r=6371000,t=Math.PI/180,x=(c-a)*t,y=(d-b)*t;
   const h=Math.sin(x/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)**2; return 2*r*Math.asin(Math.sqrt(h)); }
 function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
   clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("show"),4000); }
-// ボタンを押したときに位置を確認し、100m以内のバス停に乗車済みマークを付ける（案内は位置に関係なく動く）
+// ボタンを押したときに位置を確認し、200m以内のバス停に乗車済みマークを付ける（案内は位置に関係なく動く）
 function checkIn(){
   if(!("geolocation" in navigator)) return;
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -263,10 +321,57 @@ function highlight(k){
 }
 function stopVoice(){ synth && synth.cancel(); player.pause(); queue=[]; }
 function speaking(){ return (synth && synth.speaking) || !player.paused; }
+const imgKey = (i,k)=>`s${String(i).padStart(2,"0")}_p${k}`;
 function renderPts(i, active=-2){
   const pts = STOPS[i][3];
-  $("pts").innerHTML = pts.map((p,k)=>`<div class="pt ${p[0]} ${k===active?'on':''}" id="pt${k}">
-    <span class="sd">${p[1]}</span><h3>${p[2]}</h3><p>${p[3]}</p></div>`).join("");
+  $("pts").innerHTML = pts.map((p,k)=>{ const ph = IMG[imgKey(i,k)];
+    return `<div class="pt ${p[0]} ${k===active?'on':''} ${ph?'ph':''}" id="pt${k}" data-k="${k}" ${ph?'tabindex="0" role="button"':''}>
+    <span class="sd">${p[1]}</span>${ph?'<span class="cam">📷 写真</span>':''}<h3>${p[2]}</h3><p>${p[3]}</p></div>`; }).join("");
+  $("pts").dataset.i = i;
+}
+// 見どころカードをタップすると、代表的な写真をポップアップで表示
+function openPhoto(i,k){
+  const ph = IMG[imgKey(i,k)]; if(!ph) return;
+  const [src,by,lic,page] = ph, p = STOPS[i][3][k];
+  $("photoImg").src = src; $("photoImg").alt = p[2];
+  $("photoTitle").textContent = p[2];
+  $("photoCredit").innerHTML = "";
+  const a = document.createElement("a"); a.href = page; a.target = "_blank"; a.rel = "noopener";
+  a.textContent = `写真: ${by} / ${lic}（Wikimedia Commons）`;
+  $("photoCredit").append(a);
+  const d = $("photo");
+  if(d.showModal) d.showModal(); else window.open(page, "_blank");
+}
+$("pts").addEventListener("click", e=>{
+  const el = e.target.closest(".pt.ph"); if(el) openPhoto(+$("pts").dataset.i, +el.dataset.k);
+});
+$("pts").addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.matches(".pt.ph")) e.target.click(); });
+$("photo").addEventListener("click", e=>{ if(e.target===$("photo")) $("photo").close(); });
+
+// 方位計：GPSの進行方向（北を上にした向き）を表示。止まっているときは直前の向きを薄く表示
+const DIRS = ["北","北北東","北東","東北東","東","東南東","南東","南南東","南","南南西","南西","西南西","西","西北西","北西","北北西"];
+let watchId = null, lastFix = null, needleDeg = 0;
+function bearing(a,b,c,d){ const t=Math.PI/180, y=Math.sin((d-b)*t)*Math.cos(c*t),
+  x=Math.cos(a*t)*Math.sin(c*t)-Math.sin(a*t)*Math.cos(c*t)*Math.cos((d-b)*t); return (Math.atan2(y,x)/t+360)%360; }
+function showHeading(h, live){
+  // 針が359°→1°で一周しないよう、最短の回転にする
+  needleDeg += ((h - needleDeg) % 360 + 540) % 360 - 180;
+  $("needle").style.transform = `rotate(${needleDeg}deg)`;
+  const name = DIRS[Math.round(h/22.5)%16];
+  $("compassDir").textContent = `${name}へ`;
+  $("compass").classList.toggle("off", !live);
+  $("compass").setAttribute("aria-label", `進行方向：${name}`);
+}
+function startHeading(){
+  if(watchId!==null || !("geolocation" in navigator)) return;
+  watchId = navigator.geolocation.watchPosition(pos=>{
+    const {latitude:la, longitude:lo, heading, speed, accuracy} = pos.coords;
+    if(heading!=null && !isNaN(heading) && speed!=null && speed>1){ showHeading(heading, true); lastFix={la,lo}; return; }
+    if(!lastFix){ lastFix={la,lo}; return; }
+    const d = distM(lastFix.la,lastFix.lo,la,lo);
+    if(d > Math.max(15, accuracy)){ showHeading(bearing(lastFix.la,lastFix.lo,la,lo), true); lastFix={la,lo}; }
+    else $("compass").classList.add("off");
+  }, ()=>{}, {enableHighAccuracy:true, maximumAge:2000});
 }
 function renderList(){
   $("list").innerHTML = STOPS.map((s,i)=>
@@ -355,7 +460,7 @@ function update(){
 function arrive(){ clearInterval(tick); running=false; cur++; renderList(); setPanel(); }
 // 目安より早く次のバス停を発車した場合も、そのまま押せば次の案内へ進む
 $("bell").onclick = ()=>{
-  checkIn();
+  checkIn(); startHeading();
   if(running){ clearTimeout(cutoff); stopVoice(); arrive(); }
   if(cur===STOPS.length-1) return;
   depart();
