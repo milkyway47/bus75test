@@ -84,6 +84,7 @@ li.cur .nm{font-weight:700}
 .pt.on{background:var(--green-soft);border-color:var(--green)}
 .pt.R .sd{float:none}
 .ride{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#fff;background:#d9480f;border-radius:10px;padding:1px 8px;vertical-align:2px}
+.ride.pass{background:#6b7c74}
 .stamp{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:10px 12px;border:2px dashed #d9480f;border-radius:10px;font-size:14px}
 .stamp b{font-size:20px;color:#d9480f}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:92%;
@@ -155,7 +156,7 @@ dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8
   <h2>路線図（タップで現在地を変更）</h2>
   <ol id="list"></ol>
 
-  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から200m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。</p>
+  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から200m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。ボタンを押さないままバス停の200m圏を通り過ぎた場合は「通過」と表示し、次の区間の案内を自動で始めます。</p>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="photo" id="photo">
@@ -257,6 +258,10 @@ const KEY = "osaka75-rides";
 let rides = {};
 try{ rides = JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ rides = {}; }
 function saveRides(){ try{ localStorage.setItem(KEY, JSON.stringify(rides)); }catch(e){} }
+const PKEY = "osaka75-passed";
+let passed = {};
+try{ passed = JSON.parse(localStorage.getItem(PKEY)||"{}"); }catch(e){ passed = {}; }
+function savePassed(){ try{ localStorage.setItem(PKEY, JSON.stringify(passed)); }catch(e){} }
 function distM(a,b,c,d){ const r=6371000,t=Math.PI/180,x=(c-a)*t,y=(d-b)*t;
   const h=Math.sin(x/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)**2; return 2*r*Math.asin(Math.sqrt(h)); }
 function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
@@ -362,10 +367,31 @@ function showHeading(h, live){
   $("compass").classList.toggle("off", !live);
   $("compass").setAttribute("aria-label", `進行方向：${name}`);
 }
-function startHeading(){
+// 通過の自動判定：次に着くバス停（停車中なら今のバス停）の200m圏に入り、
+// ボタンを押さないまま圏外に出たら「通過」として、次の区間の案内を自動で始める
+let watchStop = -1, inside = false;
+function passCheck(la, lo, accuracy){
+  if(accuracy > 100) return; // 位置の精度が悪いときは判定しない
+  const t = running ? cur+1 : cur;
+  if(t >= STOPS.length-1){ watchStop = -1; return; } // 終点は対象外
+  if(t !== watchStop){ watchStop = t; inside = false; }
+  const name = STOPS[t][0];
+  const d = Math.min(...(GEO[name]||[]).map(([a,b])=>distM(la,lo,a,b)));
+  if(d <= RADIUS) inside = true;
+  else if(inside && d > RADIUS+30){ // 圏の境目でのGPSの揺れで誤判定しないよう30mの余裕
+    inside = false; watchStop = -1;
+    if(!rides[name]){ passed[name] = passed[name] || new Date().toISOString(); savePassed(); }
+    clearTimeout(cutoff); stopVoice();
+    if(running) arrive();
+    depart(); renderList();
+    toast(`${name} を通過したため、次の案内を始めました`);
+  }
+}
+function startWatch(){
   if(watchId!==null || !("geolocation" in navigator)) return;
   watchId = navigator.geolocation.watchPosition(pos=>{
     const {latitude:la, longitude:lo, heading, speed, accuracy} = pos.coords;
+    passCheck(la, lo, accuracy);
     if(heading!=null && !isNaN(heading) && speed!=null && speed>1){ showHeading(heading, true); lastFix={la,lo}; return; }
     if(!lastFix){ lastFix={la,lo}; return; }
     const d = distM(lastFix.la,lastFix.lo,la,lo);
@@ -376,7 +402,7 @@ function startHeading(){
 function renderList(){
   $("list").innerHTML = STOPS.map((s,i)=>
     `<li tabindex="0" data-i="${i}" class="${i<cur?'done':''} ${i===cur?'cur':''}">
-      <span class="dot"></span><span class="nm">${s[0]}${rides[s[0]]?'<span class="ride">✔乗車済</span>':''}</span>
+      <span class="dot"></span><span class="nm">${s[0]}${rides[s[0]]?'<span class="ride">✔乗車済</span>':passed[s[0]]?'<span class="ride pass">通過</span>':''}</span>
       <span class="mn">${s[1]?'約'+s[1]+'分':'終点'}</span></li>`).join("");
 }
 function setPanel(){
@@ -460,12 +486,12 @@ function update(){
 function arrive(){ clearInterval(tick); running=false; cur++; renderList(); setPanel(); }
 // 目安より早く次のバス停を発車した場合も、そのまま押せば次の案内へ進む
 $("bell").onclick = ()=>{
-  checkIn(); startHeading();
+  checkIn(); startWatch();
   if(running){ clearTimeout(cutoff); stopVoice(); arrive(); }
   if(cur===STOPS.length-1) return;
   depart();
 };
-$("btnReset").onclick = ()=>{ if(confirm("乗車済みスタンプをすべて消去しますか？")){ rides={}; saveRides(); renderList(); renderStamp(); } };
+$("btnReset").onclick = ()=>{ if(confirm("乗車済みスタンプと通過の記録をすべて消去しますか？")){ rides={}; saveRides(); passed={}; savePassed(); renderList(); renderStamp(); } };
 $("list").addEventListener("click", e=>{
   const li = e.target.closest("li"); if(!li) return;
   clearInterval(tick); clearTimeout(cutoff); stopVoice();
@@ -477,6 +503,8 @@ $("btnRepeat").onclick = ()=>{ if(running) speak(buildScript(cur)); };
 $("btnStop").onclick = stopVoice;
 $("rate").onchange = ()=>{ player.playbackRate = parseFloat($("rate").value); };
 renderList(); setPanel(); renderStamp();
+// 位置情報がすでに許可されていれば、ボタンを押す前から方位計と通過判定を動かす
+if(navigator.permissions) navigator.permissions.query({name:"geolocation"}).then(p=>{ if(p.state==="granted") startWatch(); }).catch(()=>{});
 </script>
 </body>
 </html>
