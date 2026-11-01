@@ -125,6 +125,11 @@ li.cur .nm{font-weight:700}
 .pickbtn .pk-t{display:block;font-size:22px;font-weight:700;margin-top:2px}
 .pickbtn .pk-s{display:block;font-size:13px;color:var(--sub)}
 .pickbtn .pk-d{display:block;font-size:13px;color:var(--sub);margin-top:2px}
+.pickbtn .pk-dep{display:none;margin-top:8px;padding:6px 10px;border-radius:10px;border:1px solid var(--green);background:var(--green-soft);color:var(--ink);font-size:13px;line-height:1.5}
+.pickbtn .pk-dep.on{display:block}
+.pk-dep .dep-ic{margin-right:6px}
+.pk-dep .dep-t{font-weight:700;font-size:17px}
+.pk-dep .dep-w{font-weight:700;margin-left:6px;color:#d9480f}
 .pickbtn.t1 .pk-d,.pickbtn.t2 .pk-d,.pickbtn.t3 .pk-d{color:var(--ink);font-weight:700}
 .pickbtn .pk-last{display:none;position:absolute;top:-9px;right:12px;font-size:11px;font-weight:700;color:#fff;background:#d9480f;border-radius:10px;padding:1px 9px}
 .pickbtn.last .pk-last{display:block}
@@ -199,6 +204,7 @@ dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8
       <span class="lg t1">200m以内</span><span class="lg t2">500m以内</span><span class="lg t3">1km以内</span>
     </div>
     <div id="pickList"></div>
+    <p class="pick-note" id="pickDepNote" hidden>🚌 が付いた路線は、最寄りのバス停から15分以内に発車する便があります（いちばん近い1本だけを表示）。時刻は時刻表の目安で、遅れや運休は反映されません。乗り場は、日付や時間帯で変わることがあります。</p>
     <p class="pick-note">現在地から近いバス停がある路線は、色が付いて表示されます。途中のバス停から乗る場合も、先に路線と方向を選んでから、路線図で乗車したバス停をタップします。</p>
   </div>
 </div>
@@ -674,30 +680,69 @@ function selectRoute(r){
 const TIERS = [[200,"t1","すぐ近く"],[500,"t2","近く"],[1000,"t3","徒歩圏"]];
 const fmtDist = d => d<1000 ? `約${Math.round(d/10)*10}m` : `約${(d/1000).toFixed(1)}km`;
 function nearestOnRoute(r, la, lo){
-  let best = null;
-  ROUTES[r].stops.forEach(([name])=>(GEO[name]||[]).forEach(([a,b])=>{
-    const d = distM(la,lo,a,b); if(!best || d<best.d) best = {name,d}; }));
+  let best = null; const st = ROUTES[r].stops;
+  st.forEach(([name],i)=>{ if(i>=st.length-1) return; // 終点では乗れないので、最寄りに数えない
+    (GEO[name]||[]).forEach(([a,b])=>{
+      const d = distM(la,lo,a,b); if(!best || d<best.d) best = {name,d,idx:i}; }); });
   return best;
 }
+
+// 発車の表示：最寄りのバス停で、15分以内に発車する便のうち、いちばん近い1本だけを出す。
+// 時刻表データ（timetable.json）は、始発の発車時刻と、始発から各バス停までの所要分（off）で持つ。データがなければ何も出さない。
+//   {"routes":{"fwd":{"days":{"wk":[分...],"sa":[...],"ho":[...]},"off":[停留所ごとの分...]}, ...}}  分＝0時からの経過分
+let TT = null, lastPick = null;
+const DEP_WINDOW = 15; // 分
+// 乗り場（始発のバス停とOCAT）。日付・時間帯によって変わることがある
+const PLATFORM = {
+  fwd:{"大阪駅前":"3番のりば","ＪＲ難波駅前":"1番のりば"},
+  rev:{"なんば":"4番のりば","ＪＲ難波駅前":"2番のりば"},
+  k34f:{"守口車庫前":"2番のりば"},
+  k34r:{"大阪駅前":"9番のりば"}
+};
+// 国民の祝日（休日ダイヤの日）。土曜は土曜ダイヤ、日曜と祝日は休日ダイヤとして扱う
+const HOLIDAYS = new Set(["2026-11-23","2027-01-01","2027-01-11","2027-02-11","2027-02-23","2027-03-21","2027-03-22","2027-04-29","2027-05-03","2027-05-04","2027-05-05","2027-07-19","2027-08-11","2027-09-20","2027-09-23","2027-10-11","2027-11-03","2027-11-23","2026-11-03"]);
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function dayType(d){ if(d.getDay()===0 || HOLIDAYS.has(ymd(d))) return "ho"; return d.getDay()===6 ? "sa" : "wk"; }
+function fmtClock(t){ return `${Math.floor(t/60)%24}:${String(t%60).padStart(2,"0")}`; }
+function nextDeparture(r, idx, now){
+  const R = TT && TT.routes && TT.routes[r]; if(!R || !R.days || !R.off || R.off[idx]==null) return null;
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  let best = null;
+  [[now,0],[new Date(now.getTime()-864e5),-1440]].forEach(([d,shift])=>{ // 前日の深夜便（24時を過ぎる便）も見る
+    (R.days[dayType(d)]||[]).forEach(st=>{ const t = st + R.off[idx] + shift;
+      if(t>=nowMin && t<=nowMin+DEP_WINDOW && (best===null || t<best)) best = t; }); });
+  return best===null ? null : {t:best, wait:best-nowMin};
+}
+fetch("timetable.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{
+  TT = j; $("pickDepNote").hidden = false; if(lastPick) updatePick(lastPick.la, lastPick.lo);
+}).catch(()=>{});
+setInterval(()=>{ if($("pick").classList.contains("show") && lastPick) updatePick(lastPick.la, lastPick.lo); }, 30000);
 function buildPick(){
   let html = "", line = "";
   Object.keys(ROUTES).forEach(r=>{ const R = ROUTES[r];
     if(R.line!==line){ line = R.line; html += `<div class="pick-line">${LINES[line]}</div>`; }
     const min = R.stops.reduce((a,s)=>a+s[1],0);
     html += `<button class="pickbtn" type="button" data-route="${r}"><span class="pk-top"><span class="pk-line">${R.line}</span><span class="pk-tier"></span></span>`
-      + `<span class="pk-t">${R.title}</span><span class="pk-s">${R.from} 発 ・ 約${min}分</span><span class="pk-d"></span><span class="pk-last">前回の路線</span></button>`;
+      + `<span class="pk-t">${R.title}</span><span class="pk-s">${R.from} 発 ・ 約${min}分</span><span class="pk-d"></span><span class="pk-dep"></span><span class="pk-last">前回の路線</span></button>`;
   });
   $("pickList").innerHTML = html;
   document.querySelectorAll(".pickbtn").forEach(b=>b.onclick = ()=>selectRoute(b.dataset.route));
 }
 function updatePick(la, lo){
-  let near = 0;
+  let near = 0; lastPick = {la,lo}; const now = new Date();
   document.querySelectorAll(".pickbtn").forEach(b=>{
-    const n = nearestOnRoute(b.dataset.route, la, lo);
+    const r = b.dataset.route, n = nearestOnRoute(r, la, lo);
     const t = n && TIERS.find(([lim])=>n.d<=lim);
     b.classList.remove("t1","t2","t3"); if(t){ b.classList.add(t[1]); near++; }
     b.querySelector(".pk-tier").textContent = t ? t[2] : "";
     b.querySelector(".pk-d").textContent = n ? `最寄り ${n.name} まで ${fmtDist(n.d)}` : "";
+    const el = b.querySelector(".pk-dep"), dep = (n && t) ? nextDeparture(r, n.idx, now) : null;
+    el.classList.toggle("on", !!dep);
+    if(dep){
+      const pf = (PLATFORM[r]||{})[n.name], w = dep.wait===0 ? "まもなく" : `あと${dep.wait}分`;
+      el.innerHTML = `<span class="dep-ic" aria-hidden="true">🚌</span><span class="dep-t">${fmtClock(dep.t)} 発</span><span class="dep-w">${w}</span><br>${n.name}${pf?" ・ "+pf:""}`;
+      el.setAttribute("aria-label", `次の発車 ${fmtClock(dep.t)}、${n.name}${pf?"、"+pf:""}、${w}`);
+    }else{ el.textContent = ""; el.removeAttribute("aria-label"); }
   });
   return near;
 }
