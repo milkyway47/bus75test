@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.DS_Store
+sample_*.mp3
+# 非公開メモ（別リポジトリ bus75test-notes）。CLAUDE.md は notes/CLAUDE.md へのリンク
+notes/
+CLAUDE.md
