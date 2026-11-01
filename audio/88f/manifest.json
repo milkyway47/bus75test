@@ -1,0 +1,511 @@
+{
+ "voice": "ja-JP-NanamiNeural",
+ "rate": "+0%",
+ "pad": 1.0,
+ "segments": [
+  {
+   "index": 0,
+   "stop": "天保山",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g00_lead",
+     "k": -1,
+     "type": "L",
+     "file": "g00_lead.mp3",
+     "sec": 15.98
+    },
+    {
+     "id": "g00_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g00_p0.mp3",
+     "sec": 11.76
+    }
+   ]
+  },
+  {
+   "index": 1,
+   "stop": "天保山ハーバービレッジ",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g01_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g01_p0.mp3",
+     "sec": 10.34
+    },
+    {
+     "id": "g01_p1",
+     "k": 1,
+     "type": "T",
+     "file": "g01_p1.mp3",
+     "sec": 8.93
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "stop": "地下鉄大阪港",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g02_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g02_p0.mp3",
+     "sec": 6.96
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "stop": "築港一丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g03_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g03_p0.mp3",
+     "sec": 12.84
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "stop": "千舟橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g04_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g04_p0.mp3",
+     "sec": 7.8
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "stop": "港晴",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g05_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g05_p0.mp3",
+     "sec": 8.83
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "stop": "八幡屋",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "g06_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g06_p0.mp3",
+     "sec": 12.84
+    },
+    {
+     "id": "g06_p1",
+     "k": 1,
+     "type": "C",
+     "file": "g06_p1.mp3",
+     "sec": 10.73
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "stop": "地下鉄朝潮橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g07_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g07_p0.mp3",
+     "sec": 6.43
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "stop": "三先",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g08_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g08_p0.mp3",
+     "sec": 5.62
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "stop": "夕凪二丁目",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g09_p0",
+     "k": 0,
+     "type": "T",
+     "file": "g09_p0.mp3",
+     "sec": 10.58
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "stop": "夕凪",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g10_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g10_p0.mp3",
+     "sec": 4.1
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "stop": "港区役所前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g11_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g11_p0.mp3",
+     "sec": 5.93
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "stop": "市岡",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g12_p0",
+     "k": 0,
+     "type": "T",
+     "file": "g12_p0.mp3",
+     "sec": 4.63
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "stop": "市岡元町",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g13_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g13_p0.mp3",
+     "sec": 4.2
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "stop": "南市岡",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g14_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g14_p0.mp3",
+     "sec": 7.66
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "stop": "境川［ドーム前］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g15_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g15_p0.mp3",
+     "sec": 6.0
+    },
+    {
+     "id": "g15_p1",
+     "k": 1,
+     "type": "T",
+     "file": "g15_p1.mp3",
+     "sec": 8.93
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "stop": "境川［北］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g16_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g16_p0.mp3",
+     "sec": 4.01
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "stop": "阪神九条",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g17_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g17_p0.mp3",
+     "sec": 11.88
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "stop": "九条新道",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g18_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g18_p0.mp3",
+     "sec": 6.05
+    }
+   ]
+  },
+  {
+   "index": 19,
+   "stop": "本田一丁目［南］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g19_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g19_p0.mp3",
+     "sec": 5.47
+    }
+   ]
+  },
+  {
+   "index": 20,
+   "stop": "本田一丁目［北］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g20_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g20_p0.mp3",
+     "sec": 3.53
+    },
+    {
+     "id": "g20_p1",
+     "k": 1,
+     "type": "T",
+     "file": "g20_p1.mp3",
+     "sec": 7.54
+    }
+   ]
+  },
+  {
+   "index": 21,
+   "stop": "川口一丁目",
+   "minutes": 4,
+   "parts": [
+    {
+     "id": "g21_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g21_p0.mp3",
+     "sec": 14.81
+    },
+    {
+     "id": "g21_p1",
+     "k": 1,
+     "type": "C",
+     "file": "g21_p1.mp3",
+     "sec": 7.06
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "stop": "土佐堀三丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g22_p0",
+     "k": 0,
+     "type": "T",
+     "file": "g22_p0.mp3",
+     "sec": 15.24
+    }
+   ]
+  },
+  {
+   "index": 23,
+   "stop": "土佐堀二丁目［西］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g23_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g23_p0.mp3",
+     "sec": 12.89
+    }
+   ]
+  },
+  {
+   "index": 24,
+   "stop": "土佐堀二丁目［東］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "g24_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g24_p0.mp3",
+     "sec": 6.17
+    }
+   ]
+  },
+  {
+   "index": 25,
+   "stop": "土佐堀一丁目",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "g25_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g25_p0.mp3",
+     "sec": 8.38
+    },
+    {
+     "id": "g25_p1",
+     "k": 1,
+     "type": "C",
+     "file": "g25_p1.mp3",
+     "sec": 8.93
+    }
+   ]
+  },
+  {
+   "index": 26,
+   "stop": "肥後橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g26_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g26_p0.mp3",
+     "sec": 5.02
+    },
+    {
+     "id": "g26_p1",
+     "k": 1,
+     "type": "C",
+     "file": "g26_p1.mp3",
+     "sec": 9.31
+    }
+   ]
+  },
+  {
+   "index": 27,
+   "stop": "渡辺橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g27_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g27_p0.mp3",
+     "sec": 8.52
+    },
+    {
+     "id": "g27_p1",
+     "k": 1,
+     "type": "T",
+     "file": "g27_p1.mp3",
+     "sec": 13.99
+    }
+   ]
+  },
+  {
+   "index": 28,
+   "stop": "堂島",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "g28_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g28_p0.mp3",
+     "sec": 7.9
+    }
+   ]
+  },
+  {
+   "index": 29,
+   "stop": "桜橋",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "g29_lead",
+     "k": -1,
+     "type": "L",
+     "file": "g29_lead.mp3",
+     "sec": 3.43
+    },
+    {
+     "id": "g29_p0",
+     "k": 0,
+     "type": "C",
+     "file": "g29_p0.mp3",
+     "sec": 11.23
+    },
+    {
+     "id": "g29_p1",
+     "k": 1,
+     "type": "C",
+     "file": "g29_p1.mp3",
+     "sec": 12.43
+    },
+    {
+     "id": "g29_p2",
+     "k": 2,
+     "type": "C",
+     "file": "g29_p2.mp3",
+     "sec": 6.96
+    }
+   ]
+  }
+ ]
+}
