@@ -133,6 +133,10 @@ li.cur .nm{font-weight:700}
 .pickbtn.t1 .pk-d,.pickbtn.t2 .pk-d,.pickbtn.t3 .pk-d{color:var(--ink);font-weight:700}
 .pickbtn .pk-last{display:none;position:absolute;top:-9px;right:12px;font-size:11px;font-weight:700;color:#fff;background:#d9480f;border-radius:10px;padding:1px 9px}
 .pickbtn.last .pk-last{display:block}
+.pick-official{display:block;margin:14px 0 0;padding:12px 14px;border:2px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;text-align:center}
+.pick-official small{display:block;margin-top:2px;font-weight:400;font-size:12px;color:var(--sub);line-height:1.5}
+.pick-official:active{transform:translateY(2px)}
+.pick-official:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .pick-note{font-size:12px;color:var(--sub);line-height:1.7;margin:16px 0 0}
 
 /* 車窓の写真（タップでポップアップ） */
@@ -204,6 +208,7 @@ dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8
       <span class="lg t1">200m以内</span><span class="lg t2">500m以内</span><span class="lg t3">1km以内</span>
     </div>
     <div id="pickList"></div>
+    <a class="pick-official" href="https://oc.bus-vision.jp/osakacitybus/view/searchStop.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">🚏</span> 公式のバス接近情報を開く<small>発車時刻・乗り場・バスの位置は、大阪シティバス公式のページで確認できます（外部サイトが開きます）</small></a>
     <p class="pick-note" id="pickDepNote" hidden>🚌 が付いた路線は、最寄りのバス停から15分以内に発車する便があります（いちばん近い1本だけを表示）。時刻は時刻表の目安で、遅れや運休は反映されません。乗り場は、日付や時間帯で変わることがあります。</p>
     <p class="pick-note">現在地から近いバス停がある路線は、色が付いて表示されます。途中のバス停から乗る場合も、先に路線と方向を選んでから、路線図で乗車したバス停をタップします。</p>
   </div>
