@@ -1,0 +1,385 @@
+{
+ "voice": "ja-JP-NanamiNeural",
+ "rate": "+0%",
+ "pad": 1.0,
+ "segments": [
+  {
+   "index": 0,
+   "stop": "なんば",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d00_lead",
+     "k": -1,
+     "type": "L",
+     "file": "d00_lead.mp3",
+     "sec": 13.22
+    },
+    {
+     "id": "d00_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d00_p0.mp3",
+     "sec": 8.78
+    },
+    {
+     "id": "d00_p1",
+     "k": 1,
+     "type": "C",
+     "file": "d00_p1.mp3",
+     "sec": 10.06
+    }
+   ]
+  },
+  {
+   "index": 1,
+   "stop": "ＪＲ難波駅前",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d01_p0",
+     "k": 0,
+     "type": "T",
+     "file": "d01_p0.mp3",
+     "sec": 9.82
+    },
+    {
+     "id": "d01_p1",
+     "k": 1,
+     "type": "C",
+     "file": "d01_p1.mp3",
+     "sec": 6.14
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "stop": "幸町一丁目［東］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d02_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d02_p0.mp3",
+     "sec": 11.38
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "stop": "幸町一丁目［西］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d03_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d03_p0.mp3",
+     "sec": 10.2
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "stop": "地下鉄桜川",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d04_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d04_p0.mp3",
+     "sec": 8.26
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "stop": "幸町三丁目",
+   "minutes": 4,
+   "parts": [
+    {
+     "id": "d05_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d05_p0.mp3",
+     "sec": 8.9
+    },
+    {
+     "id": "d05_p1",
+     "k": 1,
+     "type": "C",
+     "file": "d05_p1.mp3",
+     "sec": 7.54
+    },
+    {
+     "id": "d05_p2",
+     "k": 2,
+     "type": "C",
+     "file": "d05_p2.mp3",
+     "sec": 9.17
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "stop": "大正橋［大正駅前］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d06_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d06_p0.mp3",
+     "sec": 9.7
+    },
+    {
+     "id": "d06_p1",
+     "k": 1,
+     "type": "C",
+     "file": "d06_p1.mp3",
+     "sec": 6.43
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "stop": "三軒家",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d07_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d07_p0.mp3",
+     "sec": 4.99
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "stop": "三軒家東四丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d08_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d08_p0.mp3",
+     "sec": 12.05
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "stop": "永楽橋筋",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d09_p0",
+     "k": 0,
+     "type": "T",
+     "file": "d09_p0.mp3",
+     "sec": 6.14
+    },
+    {
+     "id": "d09_p1",
+     "k": 1,
+     "type": "T",
+     "file": "d09_p1.mp3",
+     "sec": 9.12
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "stop": "南泉尾",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d10_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d10_p0.mp3",
+     "sec": 5.98
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "stop": "千島",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d11_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d11_p0.mp3",
+     "sec": 7.85
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "stop": "大正区役所前［北］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d12_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d12_p0.mp3",
+     "sec": 6.07
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "stop": "小林",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d13_p0",
+     "k": 0,
+     "type": "T",
+     "file": "d13_p0.mp3",
+     "sec": 6.7
+    },
+    {
+     "id": "d13_p1",
+     "k": 1,
+     "type": "T",
+     "file": "d13_p1.mp3",
+     "sec": 7.7
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "stop": "中央中学校前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d14_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d14_p0.mp3",
+     "sec": 8.52
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "stop": "平尾",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d15_p0",
+     "k": 0,
+     "type": "T",
+     "file": "d15_p0.mp3",
+     "sec": 9.31
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "stop": "南恩加島",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d16_p0",
+     "k": 0,
+     "type": "T",
+     "file": "d16_p0.mp3",
+     "sec": 13.61
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "stop": "大運橋通［北］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d17_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d17_p0.mp3",
+     "sec": 5.47
+    },
+    {
+     "id": "d17_p1",
+     "k": 1,
+     "type": "C",
+     "file": "d17_p1.mp3",
+     "sec": 3.65
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "stop": "昌運橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d18_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d18_p0.mp3",
+     "sec": 6.7
+    }
+   ]
+  },
+  {
+   "index": 19,
+   "stop": "鶴町一丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d19_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d19_p0.mp3",
+     "sec": 7.1
+    }
+   ]
+  },
+  {
+   "index": 20,
+   "stop": "鶴町二丁目",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "d20_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d20_p0.mp3",
+     "sec": 9.84
+    }
+   ]
+  },
+  {
+   "index": 21,
+   "stop": "鶴町三丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "d21_lead",
+     "k": -1,
+     "type": "L",
+     "file": "d21_lead.mp3",
+     "sec": 3.43
+    },
+    {
+     "id": "d21_p0",
+     "k": 0,
+     "type": "C",
+     "file": "d21_p0.mp3",
+     "sec": 7.15
+    }
+   ]
+  }
+ ]
+}
