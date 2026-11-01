@@ -1,0 +1,567 @@
+{
+ "voice": "ja-JP-NanamiNeural",
+ "rate": "+0%",
+ "pad": 1.0,
+ "segments": [
+  {
+   "index": 0,
+   "stop": "大阪駅前",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "e00_lead",
+     "k": -1,
+     "type": "L",
+     "file": "e00_lead.mp3",
+     "sec": 16.01
+    },
+    {
+     "id": "e00_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e00_p0.mp3",
+     "sec": 12.43
+    },
+    {
+     "id": "e00_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e00_p1.mp3",
+     "sec": 5.81
+    }
+   ]
+  },
+  {
+   "index": 1,
+   "stop": "曽根崎警察署",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e01_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e01_p0.mp3",
+     "sec": 11.81
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "stop": "太融寺町",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e02_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e02_p0.mp3",
+     "sec": 10.42
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "stop": "寺町通り",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e03_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e03_p0.mp3",
+     "sec": 11.52
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "stop": "西天満",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e04_p0",
+     "k": 0,
+     "type": "T",
+     "file": "e04_p0.mp3",
+     "sec": 7.63
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "stop": "南森町［西］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e05_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e05_p0.mp3",
+     "sec": 11.78
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "stop": "南森町［大阪天満宮］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e06_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e06_p0.mp3",
+     "sec": 7.92
+    },
+    {
+     "id": "e06_p1",
+     "k": 1,
+     "type": "T",
+     "file": "e06_p1.mp3",
+     "sec": 7.46
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "stop": "堀川小学校前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e07_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e07_p0.mp3",
+     "sec": 7.61
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "stop": "東天満",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e08_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e08_p0.mp3",
+     "sec": 9.82
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "stop": "桜の宮橋",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e09_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e09_p0.mp3",
+     "sec": 13.15
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "stop": "東野田",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "e10_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e10_p0.mp3",
+     "sec": 10.99
+    },
+    {
+     "id": "e10_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e10_p1.mp3",
+     "sec": 10.25
+    },
+    {
+     "id": "e10_p2",
+     "k": 2,
+     "type": "C",
+     "file": "e10_p2.mp3",
+     "sec": 9.19
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "stop": "京橋北口［京橋駅筋］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e11_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e11_p0.mp3",
+     "sec": 5.98
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "stop": "蒲生桜小橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e12_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e12_p0.mp3",
+     "sec": 5.35
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "stop": "蒲生三丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e13_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e13_p0.mp3",
+     "sec": 8.54
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "stop": "地下鉄蒲生四丁目［西］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e14_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e14_p0.mp3",
+     "sec": 12.26
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "stop": "地下鉄蒲生四丁目［東］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e15_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e15_p0.mp3",
+     "sec": 6.38
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "stop": "今福西四丁目［南］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e16_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e16_p0.mp3",
+     "sec": 6.89
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "stop": "鯰江東小学校前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e17_p0",
+     "k": 0,
+     "type": "T",
+     "file": "e17_p0.mp3",
+     "sec": 8.76
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "stop": "今福大橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e18_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e18_p0.mp3",
+     "sec": 6.12
+    }
+   ]
+  },
+  {
+   "index": 19,
+   "stop": "地下鉄今福鶴見［西］",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e19_p0",
+     "k": 0,
+     "type": "T",
+     "file": "e19_p0.mp3",
+     "sec": 12.89
+    }
+   ]
+  },
+  {
+   "index": 20,
+   "stop": "鶴見西口",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "e20_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e20_p0.mp3",
+     "sec": 5.81
+    },
+    {
+     "id": "e20_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e20_p1.mp3",
+     "sec": 6.24
+    }
+   ]
+  },
+  {
+   "index": 21,
+   "stop": "鶴見",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e21_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e21_p0.mp3",
+     "sec": 4.85
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "stop": "横堤",
+   "minutes": 3,
+   "parts": [
+    {
+     "id": "e22_p0",
+     "k": 0,
+     "type": "T",
+     "file": "e22_p0.mp3",
+     "sec": 4.78
+    },
+    {
+     "id": "e22_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e22_p1.mp3",
+     "sec": 7.61
+    }
+   ]
+  },
+  {
+   "index": 23,
+   "stop": "地下鉄横堤",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e23_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e23_p0.mp3",
+     "sec": 5.98
+    }
+   ]
+  },
+  {
+   "index": 24,
+   "stop": "鶴見区役所前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e24_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e24_p0.mp3",
+     "sec": 4.78
+    }
+   ]
+  },
+  {
+   "index": 25,
+   "stop": "諸口",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e25_p0",
+     "k": 0,
+     "type": "T",
+     "file": "e25_p0.mp3",
+     "sec": 4.39
+    },
+    {
+     "id": "e25_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e25_p1.mp3",
+     "sec": 10.78
+    }
+   ]
+  },
+  {
+   "index": 26,
+   "stop": "東諸口",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e26_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e26_p0.mp3",
+     "sec": 5.76
+    }
+   ]
+  },
+  {
+   "index": 27,
+   "stop": "浜",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e27_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e27_p0.mp3",
+     "sec": 4.46
+    }
+   ]
+  },
+  {
+   "index": 28,
+   "stop": "安田",
+   "minutes": 4,
+   "parts": [
+    {
+     "id": "e28_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e28_p0.mp3",
+     "sec": 6.65
+    },
+    {
+     "id": "e28_p1",
+     "k": 1,
+     "type": "C",
+     "file": "e28_p1.mp3",
+     "sec": 7.54
+    }
+   ]
+  },
+  {
+   "index": 29,
+   "stop": "茨田東小学校前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e29_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e29_p0.mp3",
+     "sec": 4.78
+    }
+   ]
+  },
+  {
+   "index": 30,
+   "stop": "茨田大宮南",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e30_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e30_p0.mp3",
+     "sec": 4.85
+    }
+   ]
+  },
+  {
+   "index": 31,
+   "stop": "茨田大宮第二住宅前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e31_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e31_p0.mp3",
+     "sec": 6.14
+    }
+   ]
+  },
+  {
+   "index": 32,
+   "stop": "茨田大宮中",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e32_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e32_p0.mp3",
+     "sec": 4.46
+    }
+   ]
+  },
+  {
+   "index": 33,
+   "stop": "茨田大宮",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "e33_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e33_p0.mp3",
+     "sec": 12.53
+    }
+   ]
+  },
+  {
+   "index": 34,
+   "stop": "三ツ島南",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "e34_lead",
+     "k": -1,
+     "type": "L",
+     "file": "e34_lead.mp3",
+     "sec": 3.43
+    },
+    {
+     "id": "e34_p0",
+     "k": 0,
+     "type": "C",
+     "file": "e34_p0.mp3",
+     "sec": 11.52
+    }
+   ]
+  }
+ ]
+}
