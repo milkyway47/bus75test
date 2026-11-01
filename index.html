@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>75号系統 車窓ガイド（試作）</title>
+<title>大阪シティバス 車窓ガイド（試作）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -101,19 +101,34 @@ li.cur .nm{font-weight:700}
 .compass.off .dir{color:#8a8070}
 
 /* 路線の選択画面 */
-.pick{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:none;align-items:center;justify-content:center;padding:24px 16px}
+.pick{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:none;justify-content:center;padding:20px 16px 32px}
 .pick.show{display:flex}
-.pick-in{width:100%;max-width:420px;text-align:center}
-.pick-badge{display:inline-block;background:var(--green);color:#fff;font-weight:700;font-size:22px;padding:2px 14px;border-radius:6px}
-.pick h1{font-size:22px;margin:10px 0 4px}
-.pick-lead{margin:0 0 20px;color:var(--sub)}
-.pickbtn{position:relative;display:block;width:100%;margin:0 0 14px;padding:20px 16px;font:inherit;color:var(--ink);background:var(--green-soft);border:2px solid var(--green);border-radius:14px;cursor:pointer;text-align:center}
+.pick-in{width:100%;max-width:440px;margin:auto 0}
+.pick h1{font-size:22px;margin:0 0 4px;text-align:center}
+.pick-lead{margin:0 0 12px;color:var(--sub);text-align:center}
+.pick-gps{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--sub);margin:0 0 8px}
+.pick-gps button{font:inherit;font-size:12px;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;flex:none}
+.pick-legend{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.lg{font-size:12px;font-weight:700;padding:2px 10px;border-radius:10px;border:2px solid var(--line)}
+.t1{--tc:#e8352b;--tb:rgba(232,53,43,.13)}
+.t2{--tc:#1f9d5c;--tb:rgba(31,157,92,.13)}
+.t3{--tc:#3a7bc8;--tb:rgba(58,123,200,.13)}
+.lg.t1,.lg.t2,.lg.t3{border-color:var(--tc);background:var(--tb)}
+.pick-line{font-size:13px;font-weight:700;color:var(--sub);margin:14px 0 6px}
+.pickbtn{position:relative;display:block;width:100%;margin:0 0 10px;padding:12px 14px 12px 16px;font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-left-width:8px;border-radius:14px;cursor:pointer;text-align:left}
+.pickbtn.t1,.pickbtn.t2,.pickbtn.t3{border-color:var(--tc);background:var(--tb)}
 .pickbtn:active{transform:translateY(2px)}
-.pickbtn .pk-t{display:block;font-size:26px;font-weight:700}
-.pickbtn .pk-s{display:block;font-size:14px;color:var(--sub);margin-top:2px}
+.pickbtn .pk-top{display:flex;align-items:center;gap:8px}
+.pickbtn .pk-line{background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:0 8px;border-radius:4px}
+.pickbtn .pk-tier{display:none;font-size:12px;font-weight:700;color:#fff;background:var(--tc);border-radius:10px;padding:0 9px}
+.pickbtn.t1 .pk-tier,.pickbtn.t2 .pk-tier,.pickbtn.t3 .pk-tier{display:inline-block}
+.pickbtn .pk-t{display:block;font-size:22px;font-weight:700;margin-top:2px}
+.pickbtn .pk-s{display:block;font-size:13px;color:var(--sub)}
+.pickbtn .pk-d{display:block;font-size:13px;color:var(--sub);margin-top:2px}
+.pickbtn.t1 .pk-d,.pickbtn.t2 .pk-d,.pickbtn.t3 .pk-d{color:var(--ink);font-weight:700}
 .pickbtn .pk-last{display:none;position:absolute;top:-9px;right:12px;font-size:11px;font-weight:700;color:#fff;background:#d9480f;border-radius:10px;padding:1px 9px}
 .pickbtn.last .pk-last{display:block}
-.pick-note{font-size:12px;color:var(--sub);line-height:1.7;margin:18px 0 0}
+.pick-note{font-size:12px;color:var(--sub);line-height:1.7;margin:16px 0 0}
 
 /* 車窓の写真（タップでポップアップ） */
 .pt.ph{cursor:pointer}
@@ -132,7 +147,7 @@ dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8
 <body>
 <div class="wrap">
   <header class="led" aria-live="polite">
-    <div class="route"><b>75</b><span id="routeLbl">大阪駅前 → なんば</span></div>
+    <div class="route"><b id="routeNo">75</b><span id="routeLbl">大阪駅前 → なんば</span></div>
     <div class="next" id="lblNext">ご乗車のバス停</div>
     <div class="stop" id="stopName">大阪駅前</div>
     <div class="meta"><span id="lblState">発車したらボタンを押してください</span><span id="lblTime"></span></div>
@@ -172,17 +187,19 @@ dialog.photo button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8
   <h2>路線図（タップで現在地を変更）</h2>
   <ol id="list"></ol>
 
-  <p class="note">試作版です。所要時間は平日昼間の時刻表（大阪駅前→なんば 約32分、なんば→大阪駅前 約27分）をもとにした目安です。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から200m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。ボタンを押さないままバス停の200m圏を通り過ぎた場合は「通過」と表示し、次の区間の案内を自動で始めます。</p>
+  <p class="note">試作版です。所要時間は平日昼間の時刻表をもとにした目安です（路線ごとの合計は、選択画面に表示しています）。朝夕や渋滞で前後するため、次のバス停を出たときにボタンを押せば、そこから次の案内に切り替わります。案内音声は、最も所要時間が短くなる早朝の便でも時間内に収まる長さにしています。位置情報を許可すると、実際にバス停から200m以内でボタンを押したときだけ乗車済みスタンプが付きます（記録はこの端末のブラウザ内に保存）。ボタンを押さないままバス停の200m圏を通り過ぎた場合は「通過」と表示し、次の区間の案内を自動で始めます。</p>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <div class="pick" id="pick" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
   <div class="pick-in">
-    <div class="pick-badge">75</div>
-    <h1 id="pickTitle">75号系統 車窓ガイド</h1>
-    <p class="pick-lead">乗車する方向を選んでください</p>
-    <button class="pickbtn" data-route="fwd"><span class="pk-t">梅田 → なんば</span><span class="pk-s">大阪駅前 発 ・ 約32分</span><span class="pk-last">前回の路線</span></button>
-    <button class="pickbtn" data-route="rev"><span class="pk-t">なんば → 梅田</span><span class="pk-s">なんば 発 ・ 約27分</span><span class="pk-last">前回の路線</span></button>
-    <p class="pick-note">途中のバス停から乗る場合も、先に方向を選んでから、路線図で乗車したバス停をタップします。</p>
+    <h1 id="pickTitle">大阪シティバス 車窓ガイド</h1>
+    <p class="pick-lead">乗車する路線と方向を選んでください</p>
+    <div class="pick-gps"><span id="pickGps">現在地を確認しています…</span><button id="pickRefresh" type="button">現在地を更新</button></div>
+    <div class="pick-legend" aria-label="色の意味">
+      <span class="lg t1">200m以内</span><span class="lg t2">500m以内</span><span class="lg t3">1km以内</span>
+    </div>
+    <div id="pickList"></div>
+    <p class="pick-note">現在地から近いバス停がある路線は、色が付いて表示されます。途中のバス停から乗る場合も、先に路線と方向を選んでから、路線図で乗車したバス停をタップします。</p>
   </div>
 </div>
 <dialog class="photo" id="photo">
@@ -261,17 +278,66 @@ const STOPS_REV = [
  ["大阪駅前", 0, "", []],
 ];
 
+// 34号系統（守口車庫前 ⇄ 大阪駅前）。往復とも同じ20停留所に停まる（停車順はジョルダンの路線図による）
+const STOPS_34F = [
+ ["守口車庫前", 1, "大阪シティバス34号系統、大阪駅前行きへようこそ。守口から梅田まで、淀川の南岸に沿って、城北公園通を西へ進みます。", [["T", "豆知識", "京街道の宿場町", "守口は、江戸時代、京街道の宿場町として栄えました。"], ["C", "沿線", "守口市役所", "守口車庫前の近くには、守口市役所があります。", "k_moriguchi"]]],
+ ["地下鉄太子橋今市［西］", 2, "", [["C", "沿線", "地下鉄谷町線", "地下鉄谷町線の太子橋今市駅の近くを通ります。"], ["T", "豆知識", "守口大根", "守口といえば、守口大根です。とても細長い大根で、漬け物の守口漬の材料として知られています。"]]],
+ ["今市", 1, "", [["C", "沿線", "旭区の住宅街", "このあたりは、大阪市旭区です。住宅街の中を、西へ進みます。"]]],
+ ["大宮小学校前", 1, "", [["C", "沿線", "大阪工業大学", "まもなく中宮です。近くには、大阪工業大学の大宮キャンパスがあります。"]]],
+ ["中宮", 2, "", [["C", "前方", "城北公園通", "このあたりから、淀川の南岸に沿った城北公園通を進みます。"], ["T", "豆知識", "城北公園", "城北公園は、淀川のほとりにある大阪市の公園です。園内の菖蒲園は、初夏の花の名所として知られています。", "k_johoku"]]],
+ ["城北公園前", 1, "", [["T", "豆知識", "城北公園通の名前", "城北公園通の名前は、この城北公園にちなんだものです。"]]],
+ ["生江", 3, "", [["C", "沿線", "淀川の堤防", "生江を過ぎて、赤川へ向かいます。淀川の堤防に沿って、まっすぐ西へ進みます。"], ["T", "豆知識", "淀川", "淀川は、琵琶湖から流れ出る瀬田川、宇治川と名前を変えながら、大阪湾へ注ぐ川です。", "k_yodo"]]],
+ ["赤川三丁目", 1, "", [["C", "前方", "大東町", "まもなく大東町です。バスは、城北公園通を西へ進みます。"]]],
+ ["大東町", 2, "", [["C", "前方", "毛馬へ", "このあたりから、淀川と大川が分かれる、毛馬の地に近づきます。"], ["T", "豆知識", "大川", "大川は、淀川から分かれて大阪の中心部へ流れる川で、かつての淀川の本流でした。"]]],
+ ["毛馬町二丁目", 2, "", [["C", "沿線", "毛馬閘門", "毛馬には、水の流れを調節する毛馬閘門があります。ここは、淀川から大川が分かれる場所です。", "k_kema"], ["T", "豆知識", "与謝蕪村", "俳人の与謝蕪村は、このあたりの毛馬村の生まれと言われています。"]]],
+ ["毛馬橋", 2, "", [["C", "前方", "34号だけの区間", "毛馬橋から済生会病院前までの区間は、大阪シティバスの中でも、34号だけが走ります。"], ["T", "豆知識", "長柄の橋", "長柄は、古くから歌に詠まれた「長柄の橋」で知られる土地です。"]]],
+ ["長柄東", 1, "", [["C", "沿線", "長柄橋", "このあたりは、大阪市北区の長柄です。近くの淀川には、長柄橋がかかっています。", "k_nagara"]]],
+ ["長柄西", 2, "", [["C", "沿線", "なにわの湯", "長柄西の近くには、駅近の天然温泉、なにわの湯があります。"], ["C", "前方", "天神橋八丁目", "まもなく天神橋八丁目です。ここから、梅田方面へ向かいます。"]]],
+ ["天神橋八丁目", 1, "", [["C", "沿線", "本庄", "このあたりは、大阪市北区の本庄です。"]]],
+ ["本庄西二丁目", 1, "", [["C", "沿線", "豊崎神社", "まもなく豊崎神社前です。近くには、豊崎神社があります。"]]],
+ ["豊崎神社前", 1, "", [["T", "豆知識", "豊崎", "豊崎は、梅田の北にあたる街です。バスは、梅田へ近づいていきます。"]]],
+ ["豊崎北", 2, "", [["C", "沿線", "中津", "地下鉄中津の近くを通ります。中津は、梅田のすぐ北にある街です。"], ["T", "豆知識", "中津川", "中津の地名は、かつてこのあたりを流れていた中津川に由来すると言われます。"]]],
+ ["地下鉄中津", 2, "", [["C", "前方", "梅田へ", "いよいよ梅田が近づいてきます。まもなく済生会病院前です。"], ["C", "沿線", "梅田芸術劇場", "済生会病院前の近くには、梅田芸術劇場があります。メインホールと、シアター・ドラマシティの、二つの劇場があります。", "k_umeda_arts"]]],
+ ["済生会病院前", 2, "まもなく終点です。", [["C", "前方", "大阪ステーションシティ", "大阪駅前の大阪ステーションシティ、サウスゲートビルディングは、JR大阪駅に直結していて、大丸やホテル、レストランが並びます。", "k_station_city"], ["C", "前方", "終点大阪駅前", "終点の大阪駅前です。ご乗車ありがとうございました。"]]],
+ ["大阪駅前", 0, "", []],
+];
+const STOPS_34R = [
+ ["大阪駅前", 2, "大阪シティバス34号系統、守口車庫前行きへようこそ。梅田から守口まで、北へ向かったあと、淀川の南岸に沿って、城北公園通を東へ進みます。", [["C", "前方", "大阪ステーションシティ", "バスは、JR大阪駅に直結する大阪ステーションシティ、サウスゲートビルディングの前を出発します。", "k_station_city"], ["C", "沿線", "梅田芸術劇場", "まもなく済生会病院前です。近くには、梅田芸術劇場があります。メインホールと、シアター・ドラマシティの、二つの劇場があります。", "k_umeda_arts"]]],
+ ["済生会病院前", 1, "", [["T", "豆知識", "中津川", "まもなく地下鉄中津です。中津の地名は、かつてこのあたりを流れていた中津川に由来すると言われます。"], ["C", "前方", "34号だけの区間", "ここから毛馬橋までの区間は、大阪シティバスの中でも、34号だけが走ります。"]]],
+ ["地下鉄中津", 1, "", [["C", "前方", "豊崎", "中津を過ぎて、豊崎へ向かいます。豊崎は、梅田の北にあたる街です。"]]],
+ ["豊崎北", 1, "", [["C", "沿線", "豊崎神社", "まもなく豊崎神社前です。近くには、豊崎神社があります。バスは、東へ向かいます。"]]],
+ ["豊崎神社前", 1, "", [["C", "沿線", "本庄", "このあたりは、大阪市北区の本庄です。"]]],
+ ["本庄西二丁目", 1, "", [["C", "前方", "天神橋八丁目", "まもなく天神橋八丁目です。ここから、淀川に向かって、東へ進みます。"]]],
+ ["天神橋八丁目", 2, "", [["C", "沿線", "なにわの湯", "まもなく長柄西です。近くには、駅近の天然温泉、なにわの湯があります。"], ["C", "沿線", "長柄橋", "近くの淀川には、長柄橋がかかっています。", "k_nagara"]]],
+ ["長柄西", 1, "", [["T", "豆知識", "長柄の橋", "長柄は、古くから歌に詠まれた「長柄の橋」で知られる土地です。"]]],
+ ["長柄東", 2, "", [["C", "前方", "毛馬へ", "まもなく毛馬橋です。このあたりは、淀川から大川が分かれる、毛馬の地です。"], ["T", "豆知識", "大川", "大川は、淀川から分かれて大阪の中心部へ流れる川で、かつての淀川の本流でした。"]]],
+ ["毛馬橋", 1, "", [["C", "沿線", "毛馬閘門", "毛馬には、水の流れを調節する毛馬閘門があります。", "k_kema"]]],
+ ["毛馬町二丁目", 1, "", [["T", "豆知識", "与謝蕪村", "俳人の与謝蕪村は、このあたりの毛馬村の生まれと言われています。"]]],
+ ["大東町", 2, "", [["T", "豆知識", "淀川", "淀川は、琵琶湖から流れ出る瀬田川、宇治川と名前を変えながら、大阪湾へ注ぐ川です。", "k_yodo"], ["C", "前方", "城北公園通", "バスは、淀川の堤防に沿って、城北公園通を東へ進みます。"]]],
+ ["赤川三丁目", 1, "", [["C", "前方", "生江", "まもなく生江です。このあたりは、大阪市旭区です。"]]],
+ ["生江", 1, "", [["T", "豆知識", "城北公園通の名前", "城北公園通の名前は、まもなく見えてくる城北公園にちなんだものです。"]]],
+ ["城北公園前", 1, "", [["T", "豆知識", "城北公園", "城北公園は、淀川のほとりにある大阪市の公園です。園内の菖蒲園は、初夏の花の名所として知られています。", "k_johoku"]]],
+ ["中宮", 2, "", [["C", "沿線", "大阪工業大学", "中宮の近くには、大阪工業大学の大宮キャンパスがあります。"], ["C", "前方", "大宮小学校前", "まもなく大宮小学校前です。住宅街の中を、東へ進みます。"]]],
+ ["大宮小学校前", 2, "", [["C", "沿線", "旭区の今市", "このあたりは、大阪市旭区の今市です。"], ["C", "前方", "谷町線", "まもなく、地下鉄谷町線の太子橋今市駅が近づいてきます。"]]],
+ ["今市", 2, "", [["C", "沿線", "地下鉄谷町線", "地下鉄谷町線の太子橋今市駅の近くを通ります。"], ["T", "豆知識", "守口大根", "守口といえば、守口大根です。とても細長い大根で、漬け物の守口漬の材料として知られています。"]]],
+ ["地下鉄太子橋今市［西］", 1, "まもなく終点です。", [["T", "豆知識", "京街道の宿場町", "守口は、江戸時代、京街道の宿場町として栄えました。"], ["C", "前方", "終点守口車庫前", "終点の守口車庫前です。近くには守口市役所があります。ご乗車ありがとうございました。", "k_moriguchi"]]],
+ ["守口車庫前", 0, "", []],
+];
+
 const ROUTES = {
- fwd:{stops:STOPS_FWD, audio:"audio/", label:"大阪駅前 → なんば"},
- rev:{stops:STOPS_REV, audio:"audio/rev/", label:"なんば → 大阪駅前"}
+ fwd:{line:"75", title:"梅田 → なんば", from:"大阪駅前", label:"大阪駅前 → なんば", stops:STOPS_FWD, audio:"audio/", prefix:""},
+ rev:{line:"75", title:"なんば → 梅田", from:"なんば", label:"なんば → 大阪駅前", stops:STOPS_REV, audio:"audio/rev/", prefix:"r:"},
+ k34f:{line:"34", title:"守口 → 梅田", from:"守口車庫前", label:"守口車庫前 → 大阪駅前", stops:STOPS_34F, audio:"audio/34f/", prefix:"34f:"},
+ k34r:{line:"34", title:"梅田 → 守口", from:"大阪駅前", label:"大阪駅前 → 守口車庫前", stops:STOPS_34R, audio:"audio/34r/", prefix:"34r:"}
 };
+const LINES = {"75":"75号系統（梅田 ⇄ なんば）", "34":"34号系統（守口 ⇄ 梅田）"};
 let ROUTE = "fwd", STOPS = STOPS_FWD, routeChosen = false;
-// 乗車済み・通過の記録は路線ごとに分ける（往路は従来のキーのまま）
-const rk = n => ROUTE==="rev" ? "r:"+n : n;
+// 乗車済み・通過の記録は路線・方向ごとに分ける（75号の往路は従来のキーのまま）
+const rk = n => ROUTES[ROUTE].prefix + n;
 
 // バス停の位置（Googleマップ上の停留所。上下線でポールが違う場合は両方）
 const GEO = {
- "大阪駅前":[[34.702213,135.497308],[34.702798,135.494540]],
+ "大阪駅前":[[34.702213,135.497308],[34.702798,135.494540],[34.702381,135.497831]],
  "桜橋":[[34.697162,135.495306],[34.698878,135.495496]],
  "出入橋":[[34.697129,135.490990],[34.696444,135.489885]],
  "田蓑橋":[[34.693001,135.491670],[34.693428,135.492539]],
@@ -280,6 +346,26 @@ const GEO = {
  "肥後橋":[[34.691943,135.495398],[34.691740,135.495516]],
  "渡辺橋":[[34.693383,135.495933],[34.693819,135.495251]],
  "堂島":[[34.695429,135.495532]],
+ // 34号系統の停留所（OpenStreetMapの停留所データ。大東町は停留所がなく、近くの「大東町一丁目」の位置で代用）
+ "守口車庫前":[[34.733460,135.558006],[34.733969,135.557862]],
+ "地下鉄太子橋今市［西］":[[34.731330,135.554635],[34.731406,135.555179]],
+ "今市":[[34.729170,135.552033],[34.729177,135.551722],[34.729444,135.551554]],
+ "大宮小学校前":[[34.729040,135.547414],[34.729078,135.546610]],
+ "中宮":[[34.728632,135.543538],[34.728673,135.542507]],
+ "城北公園前":[[34.728179,135.537679],[34.727989,135.537515]],
+ "生江":[[34.727310,135.535088]],
+ "赤川三丁目":[[34.726203,135.531819],[34.725456,135.530909],[34.725217,135.531561]],
+ "大東町":[[34.723308,135.530034]],
+ "毛馬町二丁目":[[34.720943,135.524736]],
+ "毛馬橋":[[34.718364,135.521192]],
+ "長柄東":[[34.715995,135.515900],[34.716141,135.515803]],
+ "長柄西":[[34.715329,135.513407],[34.715484,135.513254]],
+ "天神橋八丁目":[[34.715006,135.509513],[34.714826,135.509758]],
+ "本庄西二丁目":[[34.714977,135.506777],[34.714734,135.506311]],
+ "豊崎神社前":[[34.713847,135.502164],[34.713911,135.501526]],
+ "豊崎北":[[34.713418,135.499180]],
+ "地下鉄中津":[[34.711651,135.497282],[34.710593,135.496643]],
+ "済生会病院前":[[34.708575,135.496341],[34.708227,135.496422],[34.708380,135.496507],[34.709397,135.496132]],
  "京町堀一丁目":[[34.685566,135.492618],[34.686585,135.492798]],
  "靱本町一丁目":[[34.683053,135.492779]],
  "立売堀二丁目":[[34.679253,135.493024],[34.679709,135.493328]],
@@ -310,6 +396,14 @@ const IMG = {
  "s11_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Osaka-Namba_Station_260125.jpg/960px-Osaka-Namba_Station_260125.jpg", "Aspere", "CC0", "https://commons.wikimedia.org/wiki/File:Osaka-Namba_Station_260125.jpg"],
  "s12_p1":["https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Dotonbori%2C_Osaka%2C_at_night%2C_November_2016.jpg/960px-Dotonbori%2C_Osaka%2C_at_night%2C_November_2016.jpg", "Martin Falbisoner", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Dotonbori,_Osaka,_at_night,_November_2016.jpg"],
 };
+// 34号系統の車窓写真（Wikimedia Commons）。キーは k_ で始まる
+IMG["k_moriguchi"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Moriguchi_City_Hall_20170211.jpg/960px-Moriguchi_City_Hall_20170211.jpg", "L26", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Moriguchi_City_Hall_20170211.jpg"];
+IMG["k_kema"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Kema_Floodgate_in_201504.JPG/960px-Kema_Floodgate_in_201504.JPG", "Mc681", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Kema_Floodgate_in_201504.JPG"];
+IMG["k_nagara"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Nagara-Bashi_Bridge_in_201407.JPG/960px-Nagara-Bashi_Bridge_in_201407.JPG", "Mc681", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Nagara-Bashi_Bridge_in_201407.JPG"];
+IMG["k_yodo"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Yodogawa_Riverside_Park_Mitsuya_Chiku_20220504_054443094.jpg/960px-Yodogawa_Riverside_Park_Mitsuya_Chiku_20220504_054443094.jpg", "Nisiguti", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Yodogawa_Riverside_Park_Mitsuya_Chiku_20220504_054443094.jpg"];
+IMG["k_umeda_arts"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Umeda_Arts_Theater1.jpg/960px-Umeda_Arts_Theater1.jpg", "江戸村のとくぞう (Edomura no Tokuzo)", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Umeda_Arts_Theater1.jpg"];
+IMG["k_station_city"] = ["https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Osaka_Station_City_2024-06.jpg/960px-Osaka_Station_City_2024-06.jpg", "Mr.ちゅらさん", "CC0", "https://commons.wikimedia.org/wiki/File:Osaka_Station_City_2024-06.jpg"];
+IMG["k_johoku"] = ["https://upload.wikimedia.org/wikipedia/commons/0/00/Shirokita-Park-irisgarden.jpg", "Inoue-hiro", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Shirokita-Park-irisgarden.jpg"];
 const RADIUS = 200; // メートル
 const KEY = "osaka75-rides";
 let rides = {};
@@ -386,8 +480,8 @@ function highlight(k){
 }
 function stopVoice(){ synth && synth.cancel(); player.pause(); queue=[]; }
 function speaking(){ return (synth && synth.speaking) || !player.paused; }
-// 往路は「区間番号_見どころ番号」で自動、復路は見どころごとに指定した写真キー（5番目）だけを使う
-const imgKey = (i,k)=>{ const e = STOPS[i][3][k]; return ROUTE==="rev" ? (e && e[4]) : `s${String(i).padStart(2,"0")}_p${k}`; };
+// 75号の往路は「区間番号_見どころ番号」で自動、それ以外は見どころごとに指定した写真キー（5番目）だけを使う
+const imgKey = (i,k)=>{ const e = STOPS[i][3][k]; return ROUTE==="fwd" ? `s${String(i).padStart(2,"0")}_p${k}` : (e && e[4]); };
 function renderPts(i, active=-2){
   const pts = STOPS[i][3];
   $("pts").innerHTML = pts.map((p,k)=>{ const ph = IMG[imgKey(i,k)];
@@ -452,7 +546,7 @@ function startWatch(){
   if(watchId!==null || !("geolocation" in navigator)) return;
   watchId = navigator.geolocation.watchPosition(pos=>{
     const {latitude:la, longitude:lo, heading, speed, accuracy} = pos.coords;
-    if(routeChosen) passCheck(la, lo, accuracy);
+    if(routeChosen) passCheck(la, lo, accuracy); else if($("pick").classList.contains("show")) updatePick(la, lo);
     if(heading!=null && !isNaN(heading) && speed!=null && speed>1){ showHeading(heading, true); lastFix={la,lo}; return; }
     if(!lastFix){ lastFix={la,lo}; return; }
     const d = distM(lastFix.la,lastFix.lo,la,lo);
@@ -569,21 +663,65 @@ function selectRoute(r){
   running = false; cur = 0; watchStop = -1; inside = false;
   ROUTE = r; STOPS = ROUTES[r].stops; routeChosen = true;
   try{ localStorage.setItem(RKEY, r); }catch(e){}
+  $("routeNo").textContent = ROUTES[r].line;
   $("routeLbl").textContent = ROUTES[r].label;
   $("pick").classList.remove("show");
   loadManifest(); renderList(); setPanel(); renderStamp();
   window.scrollTo({top:0});
+}
+
+// 選択画面：現在地から各路線の最寄りバス停までの距離で、ボタンを色分けする
+const TIERS = [[200,"t1","すぐ近く"],[500,"t2","近く"],[1000,"t3","徒歩圏"]];
+const fmtDist = d => d<1000 ? `約${Math.round(d/10)*10}m` : `約${(d/1000).toFixed(1)}km`;
+function nearestOnRoute(r, la, lo){
+  let best = null;
+  ROUTES[r].stops.forEach(([name])=>(GEO[name]||[]).forEach(([a,b])=>{
+    const d = distM(la,lo,a,b); if(!best || d<best.d) best = {name,d}; }));
+  return best;
+}
+function buildPick(){
+  let html = "", line = "";
+  Object.keys(ROUTES).forEach(r=>{ const R = ROUTES[r];
+    if(R.line!==line){ line = R.line; html += `<div class="pick-line">${LINES[line]}</div>`; }
+    const min = R.stops.reduce((a,s)=>a+s[1],0);
+    html += `<button class="pickbtn" type="button" data-route="${r}"><span class="pk-top"><span class="pk-line">${R.line}</span><span class="pk-tier"></span></span>`
+      + `<span class="pk-t">${R.title}</span><span class="pk-s">${R.from} 発 ・ 約${min}分</span><span class="pk-d"></span><span class="pk-last">前回の路線</span></button>`;
+  });
+  $("pickList").innerHTML = html;
+  document.querySelectorAll(".pickbtn").forEach(b=>b.onclick = ()=>selectRoute(b.dataset.route));
+}
+function updatePick(la, lo){
+  let near = 0;
+  document.querySelectorAll(".pickbtn").forEach(b=>{
+    const n = nearestOnRoute(b.dataset.route, la, lo);
+    const t = n && TIERS.find(([lim])=>n.d<=lim);
+    b.classList.remove("t1","t2","t3"); if(t){ b.classList.add(t[1]); near++; }
+    b.querySelector(".pk-tier").textContent = t ? t[2] : "";
+    b.querySelector(".pk-d").textContent = n ? `最寄り ${n.name} まで ${fmtDist(n.d)}` : "";
+  });
+  return near;
+}
+function locatePick(){
+  const msg = $("pickGps");
+  if(!("geolocation" in navigator)){ msg.textContent = "この端末では位置情報が使えません"; return; }
+  msg.textContent = "現在地を確認しています…";
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const near = updatePick(pos.coords.latitude, pos.coords.longitude);
+    msg.textContent = near ? `現在地の近くに、乗れる路線・方向が${near}件あります` : "現在地の1km以内に、乗れる路線はありません";
+  }, err=>{
+    msg.textContent = err.code===1 ? "位置情報がオフのため、近くの路線は色分けされません" : "現在地を取得できませんでした";
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:15000});
 }
 function showPick(){
   routeChosen = false; // 選ぶまでは、位置の監視で案内を始めない
   let last = null; try{ last = localStorage.getItem(RKEY); }catch(e){}
   document.querySelectorAll(".pickbtn").forEach(b=>b.classList.toggle("last", b.dataset.route===last));
   $("pick").classList.add("show");
-  const f = document.querySelector(".pickbtn.last") || document.querySelector(".pickbtn"); f.focus();
+  locatePick();
 }
-document.querySelectorAll(".pickbtn").forEach(b=>b.onclick = ()=>selectRoute(b.dataset.route));
+$("pickRefresh").onclick = locatePick;
 $("btnRoute").onclick = ()=>{ if(!running || confirm("案内を止めて、路線の選択に戻りますか？")){ clearInterval(tick); clearTimeout(cutoff); stopVoice(); running=false; showPick(); } };
-loadManifest(); renderList(); setPanel(); renderStamp();
+buildPick(); loadManifest(); renderList(); setPanel(); renderStamp();
 showPick();
 // 位置情報がすでに許可されていれば、ボタンを押す前から方位計と通過判定を動かす
 if(navigator.permissions) navigator.permissions.query({name:"geolocation"}).then(p=>{ if(p.state==="granted") startWatch(); }).catch(()=>{});

@@ -1,0 +1,350 @@
+{
+ "voice": "ja-JP-NanamiNeural",
+ "rate": "+0%",
+ "pad": 1.0,
+ "segments": [
+  {
+   "index": 0,
+   "stop": "大阪駅前",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b00_lead",
+     "k": -1,
+     "type": "L",
+     "file": "b00_lead.mp3",
+     "sec": 16.2
+    },
+    {
+     "id": "b00_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b00_p0.mp3",
+     "sec": 10.03
+    },
+    {
+     "id": "b00_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b00_p1.mp3",
+     "sec": 14.18
+    }
+   ]
+  },
+  {
+   "index": 1,
+   "stop": "済生会病院前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b01_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b01_p0.mp3",
+     "sec": 10.51
+    },
+    {
+     "id": "b01_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b01_p1.mp3",
+     "sec": 8.5
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "stop": "地下鉄中津",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b02_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b02_p0.mp3",
+     "sec": 8.66
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "stop": "豊崎北",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b03_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b03_p0.mp3",
+     "sec": 10.75
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "stop": "豊崎神社前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b04_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b04_p0.mp3",
+     "sec": 5.18
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "stop": "本庄西二丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b05_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b05_p0.mp3",
+     "sec": 9.05
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "stop": "天神橋八丁目",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b06_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b06_p0.mp3",
+     "sec": 8.86
+    },
+    {
+     "id": "b06_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b06_p1.mp3",
+     "sec": 5.4
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "stop": "長柄西",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b07_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b07_p0.mp3",
+     "sec": 6.72
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "stop": "長柄東",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b08_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b08_p0.mp3",
+     "sec": 8.81
+    },
+    {
+     "id": "b08_p1",
+     "k": 1,
+     "type": "T",
+     "file": "b08_p1.mp3",
+     "sec": 9.05
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "stop": "毛馬橋",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b09_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b09_p0.mp3",
+     "sec": 6.05
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "stop": "毛馬町二丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b10_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b10_p0.mp3",
+     "sec": 6.7
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "stop": "大東町",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b11_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b11_p0.mp3",
+     "sec": 9.38
+    },
+    {
+     "id": "b11_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b11_p1.mp3",
+     "sec": 7.8
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "stop": "赤川三丁目",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b12_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b12_p0.mp3",
+     "sec": 6.86
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "stop": "生江",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b13_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b13_p0.mp3",
+     "sec": 7.78
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "stop": "城北公園前",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b14_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b14_p0.mp3",
+     "sec": 11.78
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "stop": "中宮",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b15_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b15_p0.mp3",
+     "sec": 6.98
+    },
+    {
+     "id": "b15_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b15_p1.mp3",
+     "sec": 8.06
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "stop": "大宮小学校前",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b16_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b16_p0.mp3",
+     "sec": 5.35
+    },
+    {
+     "id": "b16_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b16_p1.mp3",
+     "sec": 7.13
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "stop": "今市",
+   "minutes": 2,
+   "parts": [
+    {
+     "id": "b17_p0",
+     "k": 0,
+     "type": "C",
+     "file": "b17_p0.mp3",
+     "sec": 6.17
+    },
+    {
+     "id": "b17_p1",
+     "k": 1,
+     "type": "T",
+     "file": "b17_p1.mp3",
+     "sec": 11.02
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "stop": "地下鉄太子橋今市［西］",
+   "minutes": 1,
+   "parts": [
+    {
+     "id": "b18_lead",
+     "k": -1,
+     "type": "L",
+     "file": "b18_lead.mp3",
+     "sec": 3.43
+    },
+    {
+     "id": "b18_p0",
+     "k": 0,
+     "type": "T",
+     "file": "b18_p0.mp3",
+     "sec": 6.79
+    },
+    {
+     "id": "b18_p1",
+     "k": 1,
+     "type": "C",
+     "file": "b18_p1.mp3",
+     "sec": 10.49
+    }
+   ]
+  }
+ ]
+}
